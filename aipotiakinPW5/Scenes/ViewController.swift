@@ -8,24 +8,34 @@
 import UIKit
 
 final class NewsViewController: UIViewController {
+    // MARK: - Constants
+    
+    private var interactor: NewsBusinessLogic
+    
+    // MARK: - Lifecycle
+    init(interactor: NewsBusinessLogic) {
+        self.interactor = interactor
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        interactor.loadStart(NewsModel.Start.Request())
         view.backgroundColor = .cyan
+    }
+    
+    func displayStart() {
         
-        let label = UILabel()
-        view.addSubview(label)
-        label.pinCenterX(to: view.centerXAnchor)
-        label.pinCenterY(to: view.centerYAnchor)
-        label.text = "hello".localized
+    }
+    
+    func displayOther() {
         
-        let languageButton = UIButton(type: .system)
-        languageButton.setTitle("Change Language", for: .normal)
-        languageButton.addTarget(self, action: #selector(changeLanguage), for: .touchUpInside)
-        view.addSubview(languageButton)
-        languageButton.pinCenterX(to: view.centerXAnchor)
-        languageButton.pinTop(to: label.bottomAnchor, 10)
     }
 
     @objc func changeLanguage() {

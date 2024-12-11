@@ -5,7 +5,7 @@ extension SceneDelegate {
         guard let windowScene = (self.window?.windowScene) else { return }
 
         let window = UIWindow(windowScene: windowScene)
-        window.rootViewController = UINavigationController(rootViewController: NewsViewController())
+        window.rootViewController = UINavigationController(rootViewController: NewsAssembly.build())
         
         self.window = window
         window.makeKeyAndVisible()
