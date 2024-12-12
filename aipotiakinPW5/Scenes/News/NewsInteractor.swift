@@ -24,6 +24,8 @@ final class NewsInteractor: NewsBusinessLogic, NewsDataStore {
     
     // MARK: - Public Methods
     func loadFreshNews(_ request: Models.FetchArticles.Request) {
-        articles = worker.fetchArticles()
+        //articles = worker.fetchNews()
+        let array = worker.fetchNews()
+        print(array)
     }
 }

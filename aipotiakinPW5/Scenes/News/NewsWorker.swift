@@ -5,13 +5,37 @@
 //  Created by Arseniy on 12.12.2024.
 //
 
+import UIKit
+
 final class NewsWorker {
+    // MARK: - Variables
+    private var decoder: JSONDecoder = JSONDecoder()
+    private var newsPage: Models.NewsPage = Models.NewsPage()
+    private var news: [Models.ArticleModel] = []
+    
     // MARK: - Public Methods
-    func fetchArticles() -> [Models.ArticleModel] {
-        return [Models.ArticleModel(title: "title", description: "description", imageName: "background", url: "1"), Models.ArticleModel(title: "2", description: "2", imageName: "background", url: "2"), Models.ArticleModel(title: "3", description: "3", imageName: "background", url: "3"), Models.ArticleModel(title: "4", description: "4", imageName: "background", url: "4")]
+    private func getUrl(_ rubric: Int, _ pageIndex: Int) -> URL? {
+        let url: String = "https://news.myseldon.com/api/Section?rubricId=\(rubric)&pageSize=8&pageIndex=\(pageIndex)"
+        print(url)
+        return URL(string: url)
     }
     
-    func fetchMoreArticles() -> [Models.ArticleModel] {
-        return [Models.ArticleModel(title: "1", description: "1", imageName: "background", url: "1")]
+    func fetchNews() {
+        guard let url = getUrl(4, 1) else { return }
+        URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+            if let error = error {
+                print(error)
+                return
+            }
+            
+            if
+               let data = data,
+               var newsPage = try? self?.decoder.decode(Models.NewsPage.self, from: data)
+            {
+                newsPage.passTheRequestId()
+                self?.newsPage = newsPage
+                self?.news = newsPage.news ?? []
+            }
+        }.resume()
     }
 }

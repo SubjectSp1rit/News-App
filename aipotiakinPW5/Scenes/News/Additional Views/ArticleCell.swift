@@ -54,7 +54,6 @@ final class ArticleCell: UITableViewCell {
     // MARK: - Public Methods
     func configure(with article: Models.ArticleModel) {
         titleLabel.text = article.title
-        descriptionLabel.text = article.description
     }
     
     // MARK: - Private Methods
