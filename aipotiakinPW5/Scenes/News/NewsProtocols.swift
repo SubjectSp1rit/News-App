@@ -15,8 +15,6 @@ protocol NewsBusinessLogic {
 
 protocol NewsPresentationLogic {
     func presentNews(_ response: Models.FetchArticles.Response)
-    func presentStart(_ response: Models.Start.Response)
-    func presentOther(_ response: Models.Other.Response)
     
     func routeTo()
 }

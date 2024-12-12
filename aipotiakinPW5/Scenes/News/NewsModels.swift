@@ -9,6 +9,7 @@ enum Models {
     struct ArticleModel {
         var title: String
         var description: String
+        var imageName: String
         var url: String
     }
     
@@ -17,20 +18,6 @@ enum Models {
         struct Response {
             var articles: [ArticleModel]
         }
-        struct ViewModel {
-            var articles: [ArticleModel]
-        }
-    }
-    
-    enum Start {
-        struct Request { }
-        struct Response { }
-        struct ViewModel { }
-    }
-    
-    enum Other {
-        struct Request { }
-        struct Response { }
         struct ViewModel { }
     }
 }

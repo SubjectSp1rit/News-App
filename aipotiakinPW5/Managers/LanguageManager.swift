@@ -1,6 +1,6 @@
 import UIKit
 
-class LanguageManager {
+final class LanguageManager {
     static let shared = LanguageManager()
     
     private init() {}

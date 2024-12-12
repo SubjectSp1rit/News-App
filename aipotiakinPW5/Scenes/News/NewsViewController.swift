@@ -10,13 +10,23 @@ import UIKit
 final class NewsViewController: UIViewController {
     // MARK: - Constants
     private enum Constants {
+        // UI
+        static let bgImageName: String = "background"
+        
+        // navBar
+        static let navBarTitle: String = "News"
+        
         // loadFreshNewsButton
         static let loadFreshNewsButtonImageName: String = "arrow.trianglehead.counterclockwise.rotate.90"
         static let loadFreshNewsButtonTintColor: UIColor = .systemGreen
+        
+        // table
+        static let tableNumberOfSections: Int = 1
+        static let tableBgColor: UIColor = .clear
     }
     
     // MARK: - Variables
-    private var interactor: (NewsBusinessLogic & NewsDataStore)?
+    private var interactor: (NewsBusinessLogic & NewsDataStore)
     
     // MARK: - UI Components
     private let table: UITableView = UITableView(frame: .zero)
@@ -36,48 +46,10 @@ final class NewsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        interactor?.loadFreshNews(Models.FetchArticles.Request())
         configureUI()
     }
     
-    // MARK: - Private Methods
-    private func configureUI() {
-        configureBackground()
-        configureTable()
-        configureLoadFreshNewsButton()
-    }
-    
-    private func configureBackground() {
-        view.backgroundColor = UIColor(patternImage: UIImage(named: "background")!)
-        
-        let blurEffect = UIBlurEffect(style: .light)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        view.addSubview(blurEffectView)
-        
-        blurEffectView.pin(to: view)
-    }
-    
-    private func configureTable() {
-        view.addSubview(table)
-        
-        table.backgroundColor = .clear
-        table.backgroundView = nil
-        table.separatorStyle = .none
-        
-        table.pin(to: view)
-        
-        //table.register(WrittenWishCell.self, forCellReuseIdentifier: WrittenWishCell.reuseID)
-        //table.register(AddWishCell.self, forCellReuseIdentifier: AddWishCell.reuseID)
-    }
-    
-    private func configureLoadFreshNewsButton() {
-        loadFreshNewsButton.image = UIImage(systemName: Constants.loadFreshNewsButtonImageName)
-        loadFreshNewsButton.style = .plain
-        loadFreshNewsButton.tintColor = Constants.loadFreshNewsButtonTintColor
-        //addEventButton.target = target
-        self.navigationItem.rightBarButtonItem = loadFreshNewsButton
-    }
-    
+    // MARK: - Public Methods
     func displayFetchedArticles(_ viewModel: Models.FetchArticles.ViewModel) {
         table.reloadData()
     }
@@ -89,7 +61,55 @@ final class NewsViewController: UIViewController {
     func displayOther() {
         
     }
-
+    
+    // MARK: - Private Methods
+    private func configureUI() {
+        configureBackground()
+        configureTable()
+        configureNavBar()
+    }
+    
+    private func configureBackground() {
+        view.backgroundColor = UIColor(patternImage: UIImage(named: Constants.bgImageName)!)
+        
+        let blurEffect = UIBlurEffect(style: .light)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        view.addSubview(blurEffectView)
+        
+        blurEffectView.pin(to: view)
+    }
+    
+    private func configureTable() {
+        view.addSubview(table)
+        
+        table.backgroundColor = Constants.tableBgColor
+        table.backgroundView = nil
+        table.separatorStyle = .none
+        
+        table.pin(to: view)
+        
+        table.delegate = self
+        table.dataSource = self
+        table.register(ArticleCell.self, forCellReuseIdentifier: ArticleCell.reuseId)
+        
+        loadFreshNews()
+    }
+    
+    private func configureNavBar() {
+        self.title = Constants.navBarTitle
+        
+        loadFreshNewsButton.image = UIImage(systemName: Constants.loadFreshNewsButtonImageName)
+        loadFreshNewsButton.style = .plain
+        loadFreshNewsButton.tintColor = Constants.loadFreshNewsButtonTintColor
+        //addEventButton.target = target
+        self.navigationItem.rightBarButtonItem = loadFreshNewsButton
+    }
+    
+    private func loadFreshNews() {
+        interactor.loadFreshNews(Models.FetchArticles.Request())
+    }
+    
+    // MARK: - Objc Methods
     @objc func changeLanguage() {
         let alertController = UIAlertController(title: "Select Language", message: nil, preferredStyle: .actionSheet)
 
@@ -107,16 +127,31 @@ final class NewsViewController: UIViewController {
     }
 }
 
+// MARK: - UITableViewDelegate
 extension NewsViewController: UITableViewDelegate {
     
 }
 
+// MARK: - UITableViewDataSource
 extension NewsViewController: UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return Constants.tableNumberOfSections
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return interactor?.articles.count ?? 0
+        return interactor.articles.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return UITableViewCell()
+        let cell = table.dequeueReusableCell(withIdentifier: ArticleCell.reuseId,
+                                             for: indexPath)
+        guard let articleCell = cell as? ArticleCell else { return cell }
+        articleCell.configure(with: interactor.articles[indexPath.row])
+        
+        return articleCell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print("Ячейка \(indexPath.row)")
     }
 }

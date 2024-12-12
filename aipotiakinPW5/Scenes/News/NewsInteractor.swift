@@ -17,7 +17,6 @@ final class NewsInteractor: NewsBusinessLogic, NewsDataStore {
         }
     }
     
-    
     // MARK: - Lifecycle
     init(presenter: NewsPresentationLogic) {
         self.presenter = presenter
@@ -26,14 +25,5 @@ final class NewsInteractor: NewsBusinessLogic, NewsDataStore {
     // MARK: - Public Methods
     func loadFreshNews(_ request: Models.FetchArticles.Request) {
         articles = worker.fetchArticles()
-        presenter.presentNews(.init(articles: articles))
-    }
-    
-    func loadStart(_ request: Models.Start.Request) {
-        presenter.presentStart(Models.Start.Response())
-    }
-    
-    func loadOther(_ request: Models.Other.Request) {
-        presenter.presentOther(Models.Other.Response())
     }
 }

@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-/// Singleton-class fpor managing UserDefaults
+// Singleton-class for managing UserDefaults
 final class UserDefaultsManager {
     static let shared = UserDefaultsManager()
     private let defaults: UserDefaults

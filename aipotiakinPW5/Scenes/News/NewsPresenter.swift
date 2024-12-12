@@ -8,18 +8,12 @@
 import UIKit
 
 final class NewsPresenter: NewsPresentationLogic {
+    // MARK: - Variables
     weak var view: NewsViewController?
     
+    // MARK: - Public Methods
     func presentNews(_ response: Models.FetchArticles.Response) {
-        view?.displayFetchedArticles(Models.FetchArticles.ViewModel(articles: response.articles))
-    }
-    
-    func presentStart(_ response: Models.Start.Response) {
-        view?.displayStart()
-    }
-    
-    func presentOther(_ responde: Models.Other.Response) {
-        view?.displayOther()
+        view?.displayFetchedArticles(Models.FetchArticles.ViewModel())
     }
     
     func routeTo() {
