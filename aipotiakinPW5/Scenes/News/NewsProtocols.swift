@@ -5,14 +5,18 @@
 //  Created by Arseniy on 11.12.2024.
 //
 
+protocol NewsDataStore {
+    var articles: [Models.ArticleModel] { get set }
+}
+
 protocol NewsBusinessLogic {
-    func loadStart(_ request: NewsModel.Start.Request)
-    func loadOther(_ request: NewsModel.Other.Request)
+    func loadFreshNews(_ request: Models.FetchArticles.Request)
 }
 
 protocol NewsPresentationLogic {
-    func presentStart(_ response: NewsModel.Start.Response)
-    func presentOther(_ response: NewsModel.Other.Response)
+    func presentNews(_ response: Models.FetchArticles.Response)
+    func presentStart(_ response: Models.Start.Response)
+    func presentOther(_ response: Models.Other.Response)
     
     func routeTo()
 }

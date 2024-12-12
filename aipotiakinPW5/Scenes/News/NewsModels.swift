@@ -5,7 +5,23 @@
 //  Created by Arseniy on 11.12.2024.
 //
 
-enum NewsModel {
+enum Models {
+    struct ArticleModel {
+        var title: String
+        var description: String
+        var url: String
+    }
+    
+    enum FetchArticles {
+        struct Request { }
+        struct Response {
+            var articles: [ArticleModel]
+        }
+        struct ViewModel {
+            var articles: [ArticleModel]
+        }
+    }
+    
     enum Start {
         struct Request { }
         struct Response { }

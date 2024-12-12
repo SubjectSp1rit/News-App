@@ -10,11 +10,15 @@ import UIKit
 final class NewsPresenter: NewsPresentationLogic {
     weak var view: NewsViewController?
     
-    func presentStart(_ response: NewsModel.Start.Response) {
+    func presentNews(_ response: Models.FetchArticles.Response) {
+        view?.displayFetchedArticles(Models.FetchArticles.ViewModel(articles: response.articles))
+    }
+    
+    func presentStart(_ response: Models.Start.Response) {
         view?.displayStart()
     }
     
-    func presentOther(_ responde: NewsModel.Other.Response) {
+    func presentOther(_ responde: Models.Other.Response) {
         view?.displayOther()
     }
     
