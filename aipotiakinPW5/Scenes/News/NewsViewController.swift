@@ -54,14 +54,6 @@ final class NewsViewController: UIViewController {
         table.reloadData()
     }
     
-    func displayStart() {
-        
-    }
-    
-    func displayOther() {
-        
-    }
-    
     // MARK: - Private Methods
     private func configureUI() {
         configureBackground()
@@ -146,7 +138,20 @@ extension NewsViewController: UITableViewDataSource {
         let cell = table.dequeueReusableCell(withIdentifier: ArticleCell.reuseId,
                                              for: indexPath)
         guard let articleCell = cell as? ArticleCell else { return cell }
-        articleCell.configure(with: interactor.articles[indexPath.row])
+        
+        let currentArticle = interactor.articles[indexPath.row]
+        articleCell.configureText(with: currentArticle)
+        
+        if let url = currentArticle.img?.url {
+            interactor.loadImage(for: url) { [weak tableView] image in
+                DispatchQueue.main.async {
+                    // При назначении картинки проверяем, не переиспользовалась ли ячейк
+                    if let currentCell = tableView?.cellForRow(at: indexPath) as? ArticleCell {
+                        currentCell.configureImage(with: image)
+                    }
+                }
+            }
+        }
         
         return articleCell
     }

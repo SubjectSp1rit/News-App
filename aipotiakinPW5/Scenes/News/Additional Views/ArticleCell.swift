@@ -52,8 +52,14 @@ final class ArticleCell: UITableViewCell {
     }
     
     // MARK: - Public Methods
-    func configure(with article: Models.ArticleModel) {
+    func configureText(with article: Models.ArticleModel) {
         titleLabel.text = article.title
+        descriptionLabel.text = article.announce
+    }
+    
+    func configureImage(with image: UIImage?) {
+        guard let img = image else { return }
+        wrap.image = img
     }
     
     // MARK: - Private Methods
@@ -70,7 +76,7 @@ final class ArticleCell: UITableViewCell {
         
         wrap.backgroundColor = Constants.wrapBgColor
         wrap.contentMode = .scaleAspectFit
-        wrap.image = UIImage(named: "background") // hard code need to be fixed
+        //wrap.image = UIImage(named: "background") // hard code need to be fixed
         wrap.clipsToBounds = true
         wrap.layer.cornerRadius = Constants.wrapCornerRadius
         
