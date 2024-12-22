@@ -13,7 +13,7 @@ protocol NewsDataStore {
 
 protocol NewsBusinessLogic {
     func loadFreshNews(_ request: Models.FetchArticles.Request)
-    func loadImage(for url: URL, completion: @escaping (UIImage?) -> Void)
+    func loadImage(_ request: Models.FetchImage.Request)
 }
 
 protocol NewsPresentationLogic {

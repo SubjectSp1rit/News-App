@@ -42,4 +42,17 @@ enum Models {
         }
         struct ViewModel { }
     }
+    
+    enum FetchImage {
+        class Request {
+            var url: URL
+            var completion: ((UIImage?) -> Void)
+            
+            init(url: URL, completion: @escaping (UIImage?) -> Void) {
+                self.url = url
+                self.completion = completion
+            }
+        }
+        struct Response { }
+    }
 }

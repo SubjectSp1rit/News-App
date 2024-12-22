@@ -143,14 +143,15 @@ extension NewsViewController: UITableViewDataSource {
         articleCell.configureText(with: currentArticle)
         
         if let url = currentArticle.img?.url {
-            interactor.loadImage(for: url) { [weak tableView] image in
+            interactor.loadImage(Models.FetchImage.Request(url: url,
+                                                           completion: { [weak tableView] image in
                 DispatchQueue.main.async {
-                    // При назначении картинки проверяем, не переиспользовалась ли ячейк
+                    // При назначении картинки проверяем, не переиспользовалась ли ячейка
                     if let currentCell = tableView?.cellForRow(at: indexPath) as? ArticleCell {
                         currentCell.configureImage(with: image)
                     }
                 }
-            }
+            }))
         }
         
         return articleCell
