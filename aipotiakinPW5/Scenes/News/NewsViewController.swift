@@ -17,7 +17,7 @@ final class NewsViewController: UIViewController {
         static let navBarTitle: String = "News"
         
         // loadFreshNewsButton
-        static let loadFreshNewsButtonImageName: String = "arrow.trianglehead.counterclockwise.rotate.90"
+        static let loadFreshNewsButtonImageName: String = "arrow.trianglehead.2.clockwise"
         static let loadFreshNewsButtonTintColor: UIColor = .systemGreen
         
         // table
@@ -30,7 +30,8 @@ final class NewsViewController: UIViewController {
     
     // MARK: - UI Components
     private let table: UITableView = UITableView(frame: .zero)
-    private let loadFreshNewsButton: UIBarButtonItem = UIBarButtonItem()
+    private let refreshControl: UIRefreshControl = UIRefreshControl()
+    private let loadFreshNewsButton: UIButton = UIButton(type: .system)
     
     // MARK: - Lifecycle
     init(interactor: (NewsBusinessLogic & NewsDataStore)) {
@@ -51,12 +52,14 @@ final class NewsViewController: UIViewController {
     
     // MARK: - Public Methods
     func displayFetchedArticles(_ viewModel: Models.FetchArticles.ViewModel) {
+        refreshControl.endRefreshing()
         table.reloadData()
     }
     
     // MARK: - Private Methods
     private func configureUI() {
         configureBackground()
+        configureRefreshControl()
         configureTable()
         configureNavBar()
     }
@@ -77,9 +80,11 @@ final class NewsViewController: UIViewController {
         table.backgroundColor = Constants.tableBgColor
         table.backgroundView = nil
         table.separatorStyle = .none
+        table.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 100, right: 0)
         
         table.pin(to: view)
         
+        table.refreshControl = refreshControl
         table.delegate = self
         table.dataSource = self
         table.register(ArticleCell.self, forCellReuseIdentifier: ArticleCell.reuseId)
@@ -87,14 +92,22 @@ final class NewsViewController: UIViewController {
         loadFreshNews()
     }
     
+    private func configureRefreshControl() {
+        refreshControl.tintColor = .systemGreen
+        refreshControl.attributedTitle = NSAttributedString(string: "Загрузка свежих новостей...", attributes: [.foregroundColor: UIColor.systemGreen])
+        refreshControl.addTarget(self, action: #selector(refreshControllerPulled), for: .valueChanged)
+    }
+    
     private func configureNavBar() {
         self.title = Constants.navBarTitle
         
-        loadFreshNewsButton.image = UIImage(systemName: Constants.loadFreshNewsButtonImageName)
-        loadFreshNewsButton.style = .plain
+        loadFreshNewsButton.setImage(UIImage(systemName: Constants.loadFreshNewsButtonImageName), for: .normal)
+        //loadFreshNewsButton.style = .plain
         loadFreshNewsButton.tintColor = Constants.loadFreshNewsButtonTintColor
-        //addEventButton.target = target
-        self.navigationItem.rightBarButtonItem = loadFreshNewsButton
+        loadFreshNewsButton.addTarget(self, action: #selector(loadFreshNewsButtonPressed), for: .touchUpInside)
+        
+        let rightBarButton = UIBarButtonItem(customView: loadFreshNewsButton)
+        navigationItem.rightBarButtonItem = rightBarButton
     }
     
     private func loadFreshNews() {
@@ -102,6 +115,24 @@ final class NewsViewController: UIViewController {
     }
     
     // MARK: - Objc Methods
+    @objc func loadFreshNewsButtonPressed() {
+        loadFreshNews()
+        
+        guard let button = navigationItem.rightBarButtonItem?.customView as? UIButton else { return }
+        UIView.animate(withDuration: 0.35, animations: {
+            button.transform = button.transform.rotated(by: .pi)
+        }, completion: { _ in
+            UIView.animate(withDuration: 0.35, animations: {
+                button.transform = button.transform.rotated(by: -.pi)
+                print(1)
+            })
+        })
+    }
+    
+    @objc func refreshControllerPulled() {
+        loadFreshNews()
+    }
+    
     @objc func changeLanguage() {
         let alertController = UIAlertController(title: "Select Language", message: nil, preferredStyle: .actionSheet)
 
@@ -121,25 +152,36 @@ final class NewsViewController: UIViewController {
 
 // MARK: - UITableViewDelegate
 extension NewsViewController: UITableViewDelegate {
-    
 }
 
 // MARK: - UITableViewDataSource
 extension NewsViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return Constants.tableNumberOfSections
+        return interactor.articles.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return interactor.articles.count
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        // У последней ячейки снизу нет отступа, у всех остальных 10
+        return section == interactor.articles.count - 1 ? 0 : 10
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let spacerView: UIView = UIView()
+        spacerView.backgroundColor = .clear
+        return spacerView
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = table.dequeueReusableCell(withIdentifier: ArticleCell.reuseId,
                                              for: indexPath)
+        cell.selectionStyle = .none
         guard let articleCell = cell as? ArticleCell else { return cell }
         
-        let currentArticle = interactor.articles[indexPath.row]
+        let currentArticle = interactor.articles[indexPath.section]
         articleCell.configureText(with: currentArticle)
         
         if let url = currentArticle.img?.url {
@@ -153,11 +195,11 @@ extension NewsViewController: UITableViewDataSource {
                 }
             }))
         }
-        
+
         return articleCell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("Ячейка \(indexPath.row)")
+        
     }
 }

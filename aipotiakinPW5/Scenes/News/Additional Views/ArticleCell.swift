@@ -11,7 +11,7 @@ final class ArticleCell: UITableViewCell {
     // MARK: - Constants
     private enum Constants {
         // UI
-        static let contentViewBgColor: UIColor = .white.withAlphaComponent(0.2)
+        static let contentViewBgColor: UIColor = .clear
         static let cellBgColor: UIColor = .clear
         
         // wrap
@@ -36,9 +36,11 @@ final class ArticleCell: UITableViewCell {
     static let reuseId: String = "ArticleCell"
     
     // MARK: - UI Components
-    private let wrap: UIImageView = UIImageView()
+    private let wrapImage: UIImageView = UIImageView()
     private let titleLabel: UILabel = UILabel()
     private let descriptionLabel: UILabel = UILabel()
+    private let textWrap: UIView = UIView()
+    private let backgroundImage: UIImageView = UIImageView()
     
     // MARK: - Lifecycle
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -59,51 +61,83 @@ final class ArticleCell: UITableViewCell {
     
     func configureImage(with image: UIImage?) {
         guard let img = image else { return }
-        wrap.image = img
+        wrapImage.image = img
+        backgroundImage.image = img
     }
     
     // MARK: - Private Methods
     private func configureUI() {
         self.backgroundColor = Constants.cellBgColor
         contentView.backgroundColor = Constants.contentViewBgColor
-        configureWrap()
+        configureBackgroundImage()
+        configureWrapImage()
+        configureTextWrap()
         configureDescriptionLabel()
         configureTitleLabel()
     }
     
-    private func configureWrap() {
-        contentView.addSubview(wrap)
+    private func configureTextWrap() {
+        wrapImage.addSubview(textWrap)
         
-        wrap.backgroundColor = Constants.wrapBgColor
-        wrap.contentMode = .scaleAspectFit
-        //wrap.image = UIImage(named: "background") // hard code need to be fixed
-        wrap.clipsToBounds = true
-        wrap.layer.cornerRadius = Constants.wrapCornerRadius
+        textWrap.backgroundColor = .black.withAlphaComponent(0.5)
+        textWrap.clipsToBounds = true
+        textWrap.layer.cornerRadius = 15
+        textWrap.pinCenterX(to: wrapImage.centerXAnchor)
+        textWrap.pinWidth(to: wrapImage.widthAnchor)
+        textWrap.pinBottom(to: wrapImage.bottomAnchor)
+    }
+    
+    private func configureBackgroundImage() {
+        contentView.addSubview(backgroundImage)
         
-        wrap.pin(to: contentView)
-        wrap.pinHeight(to: contentView.widthAnchor)
+        backgroundImage.contentMode = .scaleAspectFill
+        backgroundImage.clipsToBounds = true
+        backgroundImage.layer.cornerRadius = Constants.wrapCornerRadius
+        
+        backgroundImage.pin(to: contentView)
+        backgroundImage.pinHeight(to: contentView.widthAnchor)
+        
+        let blurEffect = UIBlurEffect(style: .light)
+        let blurView = UIVisualEffectView(effect: blurEffect)
+        
+        backgroundImage.addSubview(blurView)
+        blurView.pin(to: backgroundImage)
+    }
+    
+    private func configureWrapImage() {
+        contentView.addSubview(wrapImage)
+        
+        wrapImage.backgroundColor = Constants.wrapBgColor
+        wrapImage.contentMode = .scaleAspectFit
+        wrapImage.clipsToBounds = true
+        wrapImage.layer.cornerRadius = Constants.wrapCornerRadius
+        
+        wrapImage.pin(to: contentView)
+        wrapImage.pinHeight(to: contentView.widthAnchor)
     }
     
     private func configureDescriptionLabel() {
-        wrap.addSubview(descriptionLabel)
+        textWrap.addSubview(descriptionLabel)
         
         descriptionLabel.textAlignment = Constants.descriptionLabelTextAlignment
         descriptionLabel.textColor = Constants.descriptionLabelTextColor
         descriptionLabel.numberOfLines = Constants.descriptionLabelNumberOfLines
-        descriptionLabel.pinCenterX(to: wrap.centerXAnchor)
-        descriptionLabel.pinLeft(to: wrap.leadingAnchor, Constants.descriptionLabelLeadingIndent)
-        descriptionLabel.pinBottom(to: wrap.bottomAnchor, Constants.descriptionLabelBottomIndent)
+        descriptionLabel.pinCenterX(to: textWrap.centerXAnchor)
+        descriptionLabel.pinLeft(to: textWrap.leadingAnchor, Constants.descriptionLabelLeadingIndent)
+        descriptionLabel.pinBottom(to: textWrap.bottomAnchor, Constants.descriptionLabelBottomIndent)
     }
     
     private func configureTitleLabel() {
-        wrap.addSubview(titleLabel)
+        textWrap.addSubview(titleLabel)
         
         titleLabel.textAlignment = Constants.titleLabelTextAlignment
+        titleLabel.font = UIFont.systemFont(ofSize: 18, weight: UIFont.Weight(rawValue: 2.0))
         titleLabel.textColor = Constants.titleLabelTextColor
         titleLabel.numberOfLines = Constants.titleLabelNumberOfLines
         titleLabel.lineBreakMode = .byTruncatingTail
-        titleLabel.pinCenterX(to: wrap.centerXAnchor)
-        titleLabel.pinLeft(to: wrap.leadingAnchor, Constants.titleLabelLeadingIndent)
+        titleLabel.pinCenterX(to: textWrap.centerXAnchor)
+        titleLabel.pinLeft(to: textWrap.leadingAnchor, Constants.titleLabelLeadingIndent)
         titleLabel.pinBottom(to: descriptionLabel.topAnchor, Constants.titleLabelBottomIndent)
+        titleLabel.pinTop(to: textWrap.topAnchor, 10)
     }
 }
