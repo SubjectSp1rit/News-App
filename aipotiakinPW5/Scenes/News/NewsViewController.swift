@@ -56,12 +56,23 @@ final class NewsViewController: UIViewController {
     
     // MARK: - Public Methods
     func displayFetchedArticles(_ viewModel: Models.FetchArticles.ViewModel) {
-        refreshControl.endRefreshing()
+        refreshControl.endRefreshing() // Новости загружены - завершаем прокрутку
         table.reloadData()
-        table.scrollToRow(at: IndexPath(row: Constants.tableFirstRowIndex, section: Constants.tableFirstSectionIndex), at: .top, animated: true)
+        scrollToTopIfNeeded() // Переносим пользователя к первой новости
     }
     
     // MARK: - Private Methods
+    private func scrollToTopIfNeeded() {
+        guard table.numberOfSections > 0, // Проверка, что есть хотя бы одна секция
+              table.numberOfRows(inSection: 0) > 0 // Проверка, что в секции есть строки
+        else {
+            return
+        }
+
+        // Прокрутка к первой строке
+        table.scrollToRow(at: IndexPath(row: Constants.tableFirstRowIndex, section: Constants.tableFirstSectionIndex), at: .top, animated: true)
+    }
+    
     private func configureUI() {
         configureBackground()
         configureRefreshControl()
@@ -108,7 +119,6 @@ final class NewsViewController: UIViewController {
         self.title = Constants.navBarTitle
         
         loadFreshNewsButton.setImage(UIImage(systemName: Constants.loadFreshNewsButtonImageName), for: .normal)
-        //loadFreshNewsButton.style = .plain
         loadFreshNewsButton.tintColor = Constants.loadFreshNewsButtonTintColor
         loadFreshNewsButton.addTarget(self, action: #selector(loadFreshNewsButtonPressed), for: .touchUpInside)
         
@@ -129,7 +139,7 @@ final class NewsViewController: UIViewController {
             button.transform = button.transform.rotated(by: .pi)
         }, completion: { _ in
             UIView.animate(withDuration: 0.35, animations: {
-                button.transform = button.transform.rotated(by: -.pi)
+                button.transform = button.transform.rotated(by: .pi)
             })
         })
     }
