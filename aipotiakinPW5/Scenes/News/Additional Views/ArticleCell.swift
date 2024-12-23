@@ -14,9 +14,16 @@ final class ArticleCell: UITableViewCell {
         static let contentViewBgColor: UIColor = .clear
         static let cellBgColor: UIColor = .clear
         
+        // backgroundImage
+        static let backgroundImageCornerRadius: CGFloat = 15
+        
         // wrap
-        static let wrapBgColor: UIColor = .clear
-        static let wrapCornerRadius: CGFloat = 15
+        static let wrapImageBgColor: UIColor = .clear
+        static let wrapImageCornerRadius: CGFloat = 15
+        
+        // textWrap
+        static let textWrapCornerRadius: CGFloat = 15
+        static let textWrapBgCorner: UIColor = .black.withAlphaComponent(0.5)
         
         // descriptionLabel
         static let descriptionLabelTextAlignment: NSTextAlignment = .left
@@ -28,9 +35,12 @@ final class ArticleCell: UITableViewCell {
         // titleLabel
         static let titleLabelTextAlignment: NSTextAlignment = .left
         static let titleLabelTextColor: UIColor = .systemGreen
+        static let titleLabelTopIndent: CGFloat = 10
         static let titleLabelLeadingIndent: CGFloat = 10
         static let titleLabelBottomIndent: CGFloat = 10
         static let titleLabelNumberOfLines: Int = 2
+        static let titleLabelFontSize: CGFloat = 18
+        static let titleLabelFontWeight: Double = 2.0
     }
     
     static let reuseId: String = "ArticleCell"
@@ -67,8 +77,9 @@ final class ArticleCell: UITableViewCell {
     
     // MARK: - Private Methods
     private func configureUI() {
-        self.backgroundColor = Constants.cellBgColor
+        backgroundColor = Constants.cellBgColor
         contentView.backgroundColor = Constants.contentViewBgColor
+        
         configureBackgroundImage()
         configureWrapImage()
         configureTextWrap()
@@ -79,9 +90,9 @@ final class ArticleCell: UITableViewCell {
     private func configureTextWrap() {
         wrapImage.addSubview(textWrap)
         
-        textWrap.backgroundColor = .black.withAlphaComponent(0.5)
+        textWrap.backgroundColor = Constants.textWrapBgCorner
         textWrap.clipsToBounds = true
-        textWrap.layer.cornerRadius = 15
+        textWrap.layer.cornerRadius = Constants.textWrapCornerRadius
         textWrap.pinCenterX(to: wrapImage.centerXAnchor)
         textWrap.pinWidth(to: wrapImage.widthAnchor)
         textWrap.pinBottom(to: wrapImage.bottomAnchor)
@@ -92,11 +103,12 @@ final class ArticleCell: UITableViewCell {
         
         backgroundImage.contentMode = .scaleAspectFill
         backgroundImage.clipsToBounds = true
-        backgroundImage.layer.cornerRadius = Constants.wrapCornerRadius
+        backgroundImage.layer.cornerRadius = Constants.backgroundImageCornerRadius
         
         backgroundImage.pin(to: contentView)
         backgroundImage.pinHeight(to: contentView.widthAnchor)
         
+        // Размытие картинки на фоне
         let blurEffect = UIBlurEffect(style: .light)
         let blurView = UIVisualEffectView(effect: blurEffect)
         
@@ -107,10 +119,10 @@ final class ArticleCell: UITableViewCell {
     private func configureWrapImage() {
         contentView.addSubview(wrapImage)
         
-        wrapImage.backgroundColor = Constants.wrapBgColor
+        wrapImage.backgroundColor = Constants.wrapImageBgColor
         wrapImage.contentMode = .scaleAspectFit
         wrapImage.clipsToBounds = true
-        wrapImage.layer.cornerRadius = Constants.wrapCornerRadius
+        wrapImage.layer.cornerRadius = Constants.wrapImageCornerRadius
         
         wrapImage.pin(to: contentView)
         wrapImage.pinHeight(to: contentView.widthAnchor)
@@ -131,13 +143,13 @@ final class ArticleCell: UITableViewCell {
         textWrap.addSubview(titleLabel)
         
         titleLabel.textAlignment = Constants.titleLabelTextAlignment
-        titleLabel.font = UIFont.systemFont(ofSize: 18, weight: UIFont.Weight(rawValue: 2.0))
+        titleLabel.font = UIFont.systemFont(ofSize: Constants.titleLabelFontSize, weight: UIFont.Weight(rawValue: Constants.titleLabelFontWeight))
         titleLabel.textColor = Constants.titleLabelTextColor
         titleLabel.numberOfLines = Constants.titleLabelNumberOfLines
         titleLabel.lineBreakMode = .byTruncatingTail
         titleLabel.pinCenterX(to: textWrap.centerXAnchor)
         titleLabel.pinLeft(to: textWrap.leadingAnchor, Constants.titleLabelLeadingIndent)
         titleLabel.pinBottom(to: descriptionLabel.topAnchor, Constants.titleLabelBottomIndent)
-        titleLabel.pinTop(to: textWrap.topAnchor, 10)
+        titleLabel.pinTop(to: textWrap.topAnchor, Constants.titleLabelTopIndent)
     }
 }

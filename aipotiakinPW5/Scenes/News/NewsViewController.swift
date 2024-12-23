@@ -21,8 +21,12 @@ final class NewsViewController: UIViewController {
         static let loadFreshNewsButtonTintColor: UIColor = .systemGreen
         
         // table
-        static let tableNumberOfSections: Int = 1
+        static let tableNumberOfRowsInSection: Int = 1
         static let tableBgColor: UIColor = .clear
+        static let tableSectionBottomIndent: CGFloat = 10
+        static let tableLastSectionBottomIndent: CGFloat = 0
+        static let tableFirstRowIndex: Int = 0
+        static let tableFirstSectionIndex: Int = 0
     }
     
     // MARK: - Variables
@@ -54,6 +58,7 @@ final class NewsViewController: UIViewController {
     func displayFetchedArticles(_ viewModel: Models.FetchArticles.ViewModel) {
         refreshControl.endRefreshing()
         table.reloadData()
+        table.scrollToRow(at: IndexPath(row: Constants.tableFirstRowIndex, section: Constants.tableFirstSectionIndex), at: .top, animated: true)
     }
     
     // MARK: - Private Methods
@@ -67,6 +72,7 @@ final class NewsViewController: UIViewController {
     private func configureBackground() {
         view.backgroundColor = UIColor(patternImage: UIImage(named: Constants.bgImageName)!)
         
+        // Размытие заднего фона
         let blurEffect = UIBlurEffect(style: .light)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
         view.addSubview(blurEffectView)
@@ -124,7 +130,6 @@ final class NewsViewController: UIViewController {
         }, completion: { _ in
             UIView.animate(withDuration: 0.35, animations: {
                 button.transform = button.transform.rotated(by: -.pi)
-                print(1)
             })
         })
     }
@@ -161,15 +166,17 @@ extension NewsViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return Constants.tableNumberOfRowsInSection
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         // У последней ячейки снизу нет отступа, у всех остальных 10
-        return section == interactor.articles.count - 1 ? 0 : 10
+        let lastSectionIndex = interactor.articles.count - 1
+        return section == lastSectionIndex ? Constants.tableLastSectionBottomIndent : Constants.tableSectionBottomIndent
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        // Вью-заглушка для отступа под каждой секцией
         let spacerView: UIView = UIView()
         spacerView.backgroundColor = .clear
         return spacerView

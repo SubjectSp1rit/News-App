@@ -15,10 +15,10 @@ final class NewsInteractor: NewsBusinessLogic, NewsDataStore {
     // MARK: - Variables
     internal var articles: [Models.ArticleModel] = [] {
         didSet {
-            presenter.presentNews(.init(articles: articles))
+            presenter.presentNews(Models.FetchArticles.Response(articles: articles))
         }
     }
-    private var isLoading = false
+    private var isLoading: Bool = false
     
     // MARK: - Lifecycle
     init(presenter: NewsPresentationLogic) {

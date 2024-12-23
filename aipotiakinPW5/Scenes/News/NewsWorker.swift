@@ -16,15 +16,10 @@ final class NewsWorker {
     private var newsPage: Models.NewsPage = Models.NewsPage()
     
     // MARK: - Public Methods
-    private func getUrl(_ rubric: Int, _ pageIndex: Int) -> URL? {
-        let url: String = "https://news.myseldon.com/api/Section?rubricId=\(rubric)&pageSize=8&pageIndex=\(pageIndex)"
-        return URL(string: url)
-    }
-    
     func fetchNews(completion: @escaping ([Models.ArticleModel]) -> Void) {
         guard let url = getUrl(4, 1) else {
-                completion([]) // Возвращаем пустой массив, если URL невалиден
-                return
+            completion([]) // Возвращаем пустой массив, если URL невалиден
+            return
         }
         
         URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
@@ -64,5 +59,11 @@ final class NewsWorker {
                 completion(nil) // Возвращаем nil в случае ошибки
             }
         }.resume()
+    }
+    
+    // MARK: - Private Methods
+    private func getUrl(_ rubric: Int, _ pageIndex: Int) -> URL? {
+        let url: String = "https://news.myseldon.com/api/Section?rubricId=\(rubric)&pageSize=8&pageIndex=\(pageIndex)"
+        return URL(string: url)
     }
 }
