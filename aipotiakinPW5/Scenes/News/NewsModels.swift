@@ -44,15 +44,17 @@ enum Models {
     }
     
     enum FetchImage {
-        class Request {
+        struct Request {
             var url: URL
-            var completion: ((UIImage?) -> Void)
-            
-            init(url: URL, completion: @escaping (UIImage?) -> Void) {
-                self.url = url
-                self.completion = completion
-            }
+            var indexPath: IndexPath
         }
-        struct Response { }
+        struct Response {
+            var fetchedImage: UIImage
+            var indexPath: IndexPath
+        }
+        struct ViewModel {
+            var fetchedImage: UIImage
+            var indexPath: IndexPath
+        }
     }
 }

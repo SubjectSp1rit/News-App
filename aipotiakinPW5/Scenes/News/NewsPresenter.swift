@@ -16,6 +16,10 @@ final class NewsPresenter: NewsPresentationLogic {
         view?.displayFetchedArticles(Models.FetchArticles.ViewModel())
     }
     
+    func presentImageToCell(_ response: Models.FetchImage.Response) {
+        view?.displayImageInCell(Models.FetchImage.ViewModel(fetchedImage: response.fetchedImage, indexPath: response.indexPath))
+    }
+    
     func routeTo() {
         view?.navigationController?.pushViewController(NewsAssembly.build(), animated: true)
     }

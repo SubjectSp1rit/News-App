@@ -61,6 +61,11 @@ final class NewsViewController: UIViewController {
         scrollToTopIfNeeded() // Переносим пользователя к первой новости
     }
     
+    func displayImageInCell(_ viewModel: Models.FetchImage.ViewModel) {
+        guard let cell = table.cellForRow(at: viewModel.indexPath) as? ArticleCell else { return }
+        cell.configureImage(with: viewModel.fetchedImage)
+    }
+    
     // MARK: - Private Methods
     private func scrollToTopIfNeeded() {
         guard table.numberOfSections > 0, // Проверка, что есть хотя бы одна секция
@@ -201,17 +206,21 @@ extension NewsViewController: UITableViewDataSource {
         let currentArticle = interactor.articles[indexPath.section]
         articleCell.configureText(with: currentArticle)
         
+        // Скачиваем картинку
         if let url = currentArticle.img?.url {
-            interactor.loadImage(Models.FetchImage.Request(url: url,
-                                                           completion: { [weak tableView] image in
-                DispatchQueue.main.async {
-                    // При назначении картинки проверяем, не переиспользовалась ли ячейка
-                    if let currentCell = tableView?.cellForRow(at: indexPath) as? ArticleCell {
-                        currentCell.configureImage(with: image)
-                    }
-                }
-            }))
+            interactor.loadImage(Models.FetchImage.Request(url: url, indexPath: indexPath))
         }
+//        if let url = currentArticle.img?.url {
+//            interactor.loadImage(Models.FetchImage.Request(url: url,
+//                                                           completion: { [weak tableView] image in
+//                DispatchQueue.main.async {
+//                    // При назначении картинки проверяем, не переиспользовалась ли ячейка
+//                    if let currentCell = tableView?.cellForRow(at: indexPath) as? ArticleCell {
+//                        currentCell.configureImage(with: image)
+//                    }
+//                }
+//            }))
+//        }
 
         return articleCell
     }

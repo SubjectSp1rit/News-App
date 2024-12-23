@@ -18,6 +18,7 @@ protocol NewsBusinessLogic {
 
 protocol NewsPresentationLogic {
     func presentNews(_ response: Models.FetchArticles.Response)
+    func presentImageToCell(_ response: Models.FetchImage.Response)
     
     func routeTo()
 }
