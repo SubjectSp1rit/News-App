@@ -13,6 +13,7 @@ enum Models {
         var title: String?
         var announce: String?
         var img: ImageContainer?
+        var sourceLink: String?
         var requestId: String?
         var articleUrl: URL? {
             let requestId = requestId ?? ""
@@ -55,6 +56,15 @@ enum Models {
         struct ViewModel {
             var fetchedImage: UIImage
             var indexPath: IndexPath
+        }
+    }
+    
+    enum ShareSheet {
+        struct Request {
+            var url: String
+        }
+        struct Response {
+            var url: String
         }
     }
 }

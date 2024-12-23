@@ -14,11 +14,15 @@ protocol NewsDataStore {
 protocol NewsBusinessLogic {
     func loadFreshNews(_ request: Models.FetchArticles.Request)
     func loadImage(_ request: Models.FetchImage.Request)
+    
+    func presentShareSheet(_ request: Models.ShareSheet.Request)
 }
 
 protocol NewsPresentationLogic {
     func presentNews(_ response: Models.FetchArticles.Response)
     func presentImageToCell(_ response: Models.FetchImage.Response)
+    
+    func presentShareSheet(_ response: Models.ShareSheet.Response)
     
     func routeTo()
 }

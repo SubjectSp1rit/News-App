@@ -51,4 +51,8 @@ final class NewsInteractor: NewsBusinessLogic, NewsDataStore {
             })
         }
     }
+    
+    func presentShareSheet(_ request: Models.ShareSheet.Request) {
+        presenter.presentShareSheet(Models.ShareSheet.Response(url: request.url))
+    }
 }

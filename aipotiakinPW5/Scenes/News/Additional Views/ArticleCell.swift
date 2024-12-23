@@ -41,6 +41,20 @@ final class ArticleCell: UITableViewCell {
         static let titleLabelNumberOfLines: Int = 2
         static let titleLabelFontSize: CGFloat = 18
         static let titleLabelFontWeight: Double = 2.0
+        
+        // shareButton
+        static let shareButtonBgColor: UIColor = .clear
+        static let shareButtonTintColor: UIColor = .white.withAlphaComponent(0.85)
+        static let shareButtonImageName: String = "square.and.arrow.up"
+        static let shareButtonTopIndent: CGFloat = 8
+        static let shareButtonLeadingIndent: CGFloat = 8
+        
+        // bookmarkButton
+        static let bookmarkButtonBgColor: UIColor = .clear
+        static let bookmarkButtonTintColor: UIColor = .white.withAlphaComponent(0.85)
+        static let bookmarkButtonImageName: String = "bookmark"
+        static let bookmarkButtonTopIndent: CGFloat = 8
+        static let bookmarkButtonTrailingIndent: CGFloat = 8
     }
     
     static let reuseId: String = "ArticleCell"
@@ -51,6 +65,13 @@ final class ArticleCell: UITableViewCell {
     private let descriptionLabel: UILabel = UILabel()
     private let textWrap: UIView = UIView()
     private let backgroundImage: UIImageView = UIImageView()
+    private let bookmarkButton: UIButton = UIButton(type: .system)
+    private let shareButton: UIButton = UIButton(type: .system)
+    
+    // MARK: - Variables
+    var onShareButtonTapped: ((String?) -> Void)?
+    
+    private(set) var articleUrl: String?
     
     // MARK: - Lifecycle
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -67,6 +88,8 @@ final class ArticleCell: UITableViewCell {
     func configureText(with article: Models.ArticleModel) {
         titleLabel.text = article.title
         descriptionLabel.text = article.announce
+        articleUrl = article.sourceLink
+        
     }
     
     func configureImage(with image: UIImage?) {
@@ -85,6 +108,32 @@ final class ArticleCell: UITableViewCell {
         configureTextWrap()
         configureDescriptionLabel()
         configureTitleLabel()
+        configureBookmarkButton()
+        configureShareButton()
+    }
+    
+    private func configureShareButton() {
+        wrapImage.addSubview(shareButton)
+        
+        shareButton.backgroundColor = Constants.shareButtonBgColor
+        shareButton.tintColor = Constants.shareButtonTintColor
+        shareButton.setImage(UIImage(systemName: Constants.shareButtonImageName), for: .normal)
+        
+        shareButton.pinTop(to: wrapImage.topAnchor, Constants.shareButtonTopIndent)
+        shareButton.pinLeft(to: wrapImage.leadingAnchor, Constants.shareButtonLeadingIndent)
+        
+        shareButton.addTarget(self, action: #selector(shareButtonPressed), for: .touchUpInside)
+    }
+    
+    private func configureBookmarkButton() {
+        wrapImage.addSubview(bookmarkButton)
+        
+        bookmarkButton.backgroundColor = Constants.bookmarkButtonBgColor
+        bookmarkButton.tintColor = Constants.bookmarkButtonTintColor
+        bookmarkButton.setImage(UIImage(systemName: Constants.bookmarkButtonImageName), for: .normal)
+        
+        bookmarkButton.pinTop(to: wrapImage.topAnchor, Constants.bookmarkButtonTopIndent)
+        bookmarkButton.pinRight(to: wrapImage.trailingAnchor, Constants.bookmarkButtonTrailingIndent)
     }
     
     private func configureTextWrap() {
@@ -118,6 +167,7 @@ final class ArticleCell: UITableViewCell {
     
     private func configureWrapImage() {
         contentView.addSubview(wrapImage)
+        wrapImage.isUserInteractionEnabled = true
         
         wrapImage.backgroundColor = Constants.wrapImageBgColor
         wrapImage.contentMode = .scaleAspectFit
@@ -151,5 +201,12 @@ final class ArticleCell: UITableViewCell {
         titleLabel.pinLeft(to: textWrap.leadingAnchor, Constants.titleLabelLeadingIndent)
         titleLabel.pinBottom(to: descriptionLabel.topAnchor, Constants.titleLabelBottomIndent)
         titleLabel.pinTop(to: textWrap.topAnchor, Constants.titleLabelTopIndent)
+    }
+    
+    // MARK: - Actions
+    @objc
+    private func shareButtonPressed() {
+        guard let url = articleUrl else { return }
+        onShareButtonTapped?(url)
     }
 }

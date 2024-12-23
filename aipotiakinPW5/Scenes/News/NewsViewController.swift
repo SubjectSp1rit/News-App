@@ -135,7 +135,7 @@ final class NewsViewController: UIViewController {
         interactor.loadFreshNews(Models.FetchArticles.Request())
     }
     
-    // MARK: - Objc Methods
+    // MARK: - Actions
     @objc func loadFreshNewsButtonPressed() {
         loadFreshNews()
         
@@ -206,21 +206,15 @@ extension NewsViewController: UITableViewDataSource {
         let currentArticle = interactor.articles[indexPath.section]
         articleCell.configureText(with: currentArticle)
         
+        articleCell.onShareButtonTapped = { [weak self] url in
+            guard let url = url else { return }
+            self?.interactor.presentShareSheet(Models.ShareSheet.Request(url: url))
+        }
+        
         // Скачиваем картинку
         if let url = currentArticle.img?.url {
             interactor.loadImage(Models.FetchImage.Request(url: url, indexPath: indexPath))
         }
-//        if let url = currentArticle.img?.url {
-//            interactor.loadImage(Models.FetchImage.Request(url: url,
-//                                                           completion: { [weak tableView] image in
-//                DispatchQueue.main.async {
-//                    // При назначении картинки проверяем, не переиспользовалась ли ячейка
-//                    if let currentCell = tableView?.cellForRow(at: indexPath) as? ArticleCell {
-//                        currentCell.configureImage(with: image)
-//                    }
-//                }
-//            }))
-//        }
 
         return articleCell
     }
