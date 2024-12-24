@@ -190,12 +190,16 @@ final class NewsViewController: UIViewController {
 
 // MARK: - UITableViewDelegate
 extension NewsViewController: UITableViewDelegate {
-    private func handleBookmark() {
-        print("BOOKMARK")
+    private func handleBookmark(for indexPath: IndexPath) {
+        guard let articleCell = table.cellForRow(at: indexPath) as? ArticleCell else { return }
+        guard let url = articleCell.articleUrl else { return }
+        interactor.configureMarkedArticle(Models.MarkArticle.Request(url: url, indexPath: indexPath))
     }
     
-    private func handleShare() {
-        print("SHARE")
+    private func handleShare(for indexPath: IndexPath) {
+        guard let articleCell = table.cellForRow(at: indexPath) as? ArticleCell else { return }
+        guard let url = articleCell.articleUrl else { return }
+        interactor.presentShareSheet(Models.ShareSheet.Request(url: url))
     }
 }
 
@@ -258,7 +262,7 @@ extension NewsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let action = UIContextualAction(style: .normal,
                                         title: Constants.tableLeadingSwipeActionShareTitle) { [weak self] (_, _, completionHandler) in
-            self?.handleShare()
+            self?.handleShare(for: indexPath)
             completionHandler(true)
         }
         
@@ -273,7 +277,7 @@ extension NewsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let action = UIContextualAction(style: .normal,
                                         title: Constants.tableTrailingSwipeActionMarkTitle) { [weak self] (_, _, completionHandler) in
-            self?.handleBookmark()
+            self?.handleBookmark(for: indexPath)
             completionHandler(true)
         }
         

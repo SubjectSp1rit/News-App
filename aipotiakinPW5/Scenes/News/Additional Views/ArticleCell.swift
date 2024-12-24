@@ -135,9 +135,9 @@ final class ArticleCell: UITableViewCell {
     }
     
     func configureImage(with image: UIImage?) {
-        guard let img = image else { return }
-        wrapImage.image = img
-        backgroundImage.image = img
+        guard let image = image else { return }
+        wrapImage.image = image
+        backgroundImage.image = image
     }
     
     /// Перекрашивает "bookmark"
@@ -146,7 +146,7 @@ final class ArticleCell: UITableViewCell {
         if state { // Желтый цвет
             bookmarkButton.tintColor = Constants.bookmarkButtonMarkedTintColor
             bookmarkButton.setImage(UIImage(systemName: Constants.bookmarkButtonMarkedImageName), for: .normal)
-        } else { // Обычныц цвет
+        } else { // Обычный цвет
             bookmarkButton.tintColor = Constants.bookmarkButtonTintColor
             bookmarkButton.setImage(UIImage(systemName: Constants.bookmarkButtonImageName), for: .normal)
         }

@@ -18,11 +18,7 @@ final class NewsInteractor: NewsBusinessLogic, NewsDataStore {
             presenter.presentNews(Models.FetchArticles.Response(articles: articles))
         }
     }
-    internal var markedArticles: [Models.ArticleModel] = [] {
-        didSet {
-            print(markedArticles.count)
-        }
-    }
+    internal var markedArticles: [Models.ArticleModel] = []
     
     private var isLoading: Bool = false
     
