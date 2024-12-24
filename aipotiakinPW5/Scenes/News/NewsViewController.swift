@@ -31,12 +31,12 @@ final class NewsViewController: UIViewController {
         // leadingSwipeAction
         static let tableLeadingSwipeActionShareTitle: String = "Share"
         static let tableLeadingSwipeActionShareImageName: String = "square.and.arrow.up"
-        static let tableLeadingSwipeActionShareBgColor: UIColor = .lightGray.withAlphaComponent(0.3)
+        static let tableLeadingSwipeActionShareBgColor: UIColor = .lightGray
         
         // trailingSwipeAction
         static let tableTrailingSwipeActionMarkTitle: String = "Mark"
         static let tableTrailingSwipeActionMarkImageName: String = "bookmark"
-        static let tableTrailingSwipeActionMarkBgColor: UIColor = .systemYellow.withAlphaComponent(0.3)
+        static let tableTrailingSwipeActionMarkBgColor: UIColor = .systemYellow
     }
     
     // MARK: - Variables
@@ -72,8 +72,17 @@ final class NewsViewController: UIViewController {
     }
     
     func displayImageInCell(_ viewModel: Models.FetchImage.ViewModel) {
-        guard let cell = table.cellForRow(at: viewModel.indexPath) as? ArticleCell else { return }
-        cell.configureImage(with: viewModel.fetchedImage)
+        guard let articleCell = table.cellForRow(at: viewModel.indexPath) as? ArticleCell else { return }
+        articleCell.configureImage(with: viewModel.fetchedImage)
+    }
+    
+    func displayMarkedArticleInCell(_ viewModel: Models.MarkArticle.ViewModel) {
+        guard let articleCell = table.cellForRow(at: viewModel.indexPath) as? ArticleCell else { return }
+        if viewModel.removed { // Если удалили - красим в стандартный цвет
+            articleCell.configureMark(for: false)
+        } else { // Иначе красим в желтый
+            articleCell.configureMark(for: true)
+        }
     }
     
     // MARK: - Private Methods
@@ -222,9 +231,20 @@ extension NewsViewController: UITableViewDataSource {
         let currentArticle = interactor.articles[indexPath.section]
         articleCell.configure(with: currentArticle)
         
+        if (interactor.markedArticles.contains(where: { $0.sourceLink == currentArticle.sourceLink })) {
+            articleCell.configureMark(for: true)
+        } else {
+            articleCell.configureMark(for: false)
+        }
+        
         articleCell.onShareButtonTapped = { [weak self] url in
             guard let url = url else { return }
             self?.interactor.presentShareSheet(Models.ShareSheet.Request(url: url))
+        }
+        
+        articleCell.onBookmarkButtonTapped = { [weak self] url in
+            guard let url = url else { return }
+            self?.interactor.configureMarkedArticle(Models.MarkArticle.Request(url: url, indexPath: indexPath))
         }
         
         // Скачиваем картинку

@@ -87,6 +87,8 @@ final class ArticleCell: UITableViewCell {
         static let bookmarkButtonImageName: String = "bookmark"
         static let bookmarkButtonTopIndent: CGFloat = 8
         static let bookmarkButtonTrailingIndent: CGFloat = 8
+        static let bookmarkButtonMarkedTintColor: UIColor = .systemYellow
+        static let bookmarkButtonMarkedImageName: String = "bookmark.fill"
     }
     
     static let reuseId: String = "ArticleCell"
@@ -136,6 +138,18 @@ final class ArticleCell: UITableViewCell {
         guard let img = image else { return }
         wrapImage.image = img
         backgroundImage.image = img
+    }
+    
+    /// Перекрашивает "bookmark"
+    /// Входные параметры: state - true, если нужно закрасить в желтый, иначе стандартный цвет
+    func configureMark(for state: Bool) {
+        if state { // Желтый цвет
+            bookmarkButton.tintColor = Constants.bookmarkButtonMarkedTintColor
+            bookmarkButton.setImage(UIImage(systemName: Constants.bookmarkButtonMarkedImageName), for: .normal)
+        } else { // Обычныц цвет
+            bookmarkButton.tintColor = Constants.bookmarkButtonTintColor
+            bookmarkButton.setImage(UIImage(systemName: Constants.bookmarkButtonImageName), for: .normal)
+        }
     }
     
     func markArticle() {
@@ -320,8 +334,7 @@ final class ArticleCell: UITableViewCell {
     
     @objc
     private func bookmarkButtonPressed() {
-        // ВРЕМЕННОЕ РЕШЕНИЕ
-        bookmarkButton.tintColor = .systemYellow.withAlphaComponent(0.85)
-        bookmarkButton.setImage(UIImage(systemName: "bookmark.fill"), for: .normal)
+        guard let url = articleUrl else { return }
+        onBookmarkButtonTapped?(url)
     }
 }

@@ -18,6 +18,12 @@ final class NewsInteractor: NewsBusinessLogic, NewsDataStore {
             presenter.presentNews(Models.FetchArticles.Response(articles: articles))
         }
     }
+    internal var markedArticles: [Models.ArticleModel] = [] {
+        didSet {
+            print(markedArticles.count)
+        }
+    }
+    
     private var isLoading: Bool = false
     
     // MARK: - Lifecycle
@@ -54,5 +60,18 @@ final class NewsInteractor: NewsBusinessLogic, NewsDataStore {
     
     func presentShareSheet(_ request: Models.ShareSheet.Request) {
         presenter.presentShareSheet(Models.ShareSheet.Response(url: request.url))
+    }
+    
+    func configureMarkedArticle(_ request: Models.MarkArticle.Request) {
+        guard let markedArticle = articles.first(where: { $0.sourceLink == request.url }) else { return }
+        
+        // Если новость уже есть в списке - значит ее надо удалить
+        if markedArticles.contains(where: { $0.sourceLink == request.url }) {
+            markedArticles.removeAll(where: { $0.sourceLink == request.url })
+            presenter.presentMarkedArticle(Models.MarkArticle.Response(indexPath: request.indexPath, removed: true))
+        } else { // Иначе добавить в массив
+            markedArticles.append(markedArticle)
+            presenter.presentMarkedArticle(Models.MarkArticle.Response(indexPath: request.indexPath, removed: false))
+        }
     }
 }

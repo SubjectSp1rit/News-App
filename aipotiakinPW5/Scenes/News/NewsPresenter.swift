@@ -27,6 +27,14 @@ final class NewsPresenter: NewsPresentationLogic {
         view?.present(activityVC, animated: true)
     }
     
+    func presentMarkedArticle(_ response: Models.MarkArticle.Response) {
+        if response.removed {
+            view?.displayMarkedArticleInCell(Models.MarkArticle.ViewModel(indexPath: response.indexPath, removed: true))
+        } else {
+            view?.displayMarkedArticleInCell(Models.MarkArticle.ViewModel(indexPath: response.indexPath, removed: false))
+        }
+    }
+    
     func routeTo() {
         view?.navigationController?.pushViewController(NewsAssembly.build(), animated: true)
     }

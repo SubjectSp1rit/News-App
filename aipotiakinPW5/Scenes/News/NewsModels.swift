@@ -69,4 +69,19 @@ enum Models {
             var url: String
         }
     }
+    
+    enum MarkArticle {
+        struct Request {
+            var url: String
+            var indexPath: IndexPath
+        }
+        struct Response {
+            var indexPath: IndexPath
+            var removed: Bool
+        }
+        struct ViewModel {
+            var indexPath: IndexPath
+            var removed: Bool
+        }
+    }
 }
