@@ -14,6 +14,8 @@ enum Models {
         var announce: String?
         var img: ImageContainer?
         var sourceLink: String?
+        var timeOfReading: String?
+        var date: String?
         var requestId: String?
         var articleUrl: URL? {
             let requestId = requestId ?? ""

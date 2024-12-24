@@ -15,14 +15,14 @@ final class ArticleCell: UITableViewCell {
         static let cellBgColor: UIColor = .clear
         
         // backgroundImage
-        static let backgroundImageCornerRadius: CGFloat = 15
+        static let backgroundImageCornerRadius: CGFloat = 0
         
         // wrap
         static let wrapImageBgColor: UIColor = .clear
-        static let wrapImageCornerRadius: CGFloat = 15
+        static let wrapImageCornerRadius: CGFloat = 0
         
         // textWrap
-        static let textWrapCornerRadius: CGFloat = 15
+        static let textWrapCornerRadius: CGFloat = 0
         static let textWrapBgCorner: UIColor = .black.withAlphaComponent(0.5)
         
         // descriptionLabel
@@ -31,6 +31,38 @@ final class ArticleCell: UITableViewCell {
         static let descriptionLabelLeadingIndent: CGFloat = 10
         static let descriptionLabelBottomIndent: CGFloat = 10
         static let descriptionLabelNumberOfLines: Int = 4
+        
+        // timeToReadStack
+        static let timeToReadStackSpacingValue: CGFloat = 6
+        static let timeToReadStackLeadingIndent: CGFloat = 10
+        static let timeToReadStackBottomIndent: CGFloat = 10
+        
+        // timeToReadLabel
+        static let timeToReadLabelTextAlignment: NSTextAlignment = .left
+        static let timeToReadLabelTextColor: UIColor = .lightGray
+        static let timeToReadLabelLeadingIndent: CGFloat = 10
+        static let timeToReadLabelBottomIndent: CGFloat = 10
+        static let timeToReadLabelNumberOfLines: Int = 1
+        
+        // timeToReadImage
+        static let timeToReadImageName: String = "clock"
+        static let timeToReadImageTintColor: UIColor = .lightGray
+        
+        // dateStack
+        static let dateStackSpacingValue: CGFloat = 6
+        static let dateStackTrailingIndent: CGFloat = 10
+        static let dateStackBottomIndent: CGFloat = 10
+        
+        // dateLabel
+        static let dateLabelTextAlignment: NSTextAlignment = .left
+        static let dateLabelTextColor: UIColor = .lightGray
+        static let dateLabelTrailingIndent: CGFloat = 10
+        static let dateLabelBottomIndent: CGFloat = 10
+        static let dateLabelNumberOfLines: Int = 1
+        
+        // dateImage
+        static let dateImageName: String = "calendar"
+        static let dateImageTintColor: UIColor = .lightGray
         
         // titleLabel
         static let titleLabelTextAlignment: NSTextAlignment = .left
@@ -44,14 +76,14 @@ final class ArticleCell: UITableViewCell {
         
         // shareButton
         static let shareButtonBgColor: UIColor = .clear
-        static let shareButtonTintColor: UIColor = .white.withAlphaComponent(0.85)
+        static let shareButtonTintColor: UIColor = .lightGray
         static let shareButtonImageName: String = "square.and.arrow.up"
         static let shareButtonTopIndent: CGFloat = 8
         static let shareButtonLeadingIndent: CGFloat = 8
         
         // bookmarkButton
         static let bookmarkButtonBgColor: UIColor = .clear
-        static let bookmarkButtonTintColor: UIColor = .white.withAlphaComponent(0.85)
+        static let bookmarkButtonTintColor: UIColor = .lightGray
         static let bookmarkButtonImageName: String = "bookmark"
         static let bookmarkButtonTopIndent: CGFloat = 8
         static let bookmarkButtonTrailingIndent: CGFloat = 8
@@ -63,6 +95,12 @@ final class ArticleCell: UITableViewCell {
     private let wrapImage: UIImageView = UIImageView()
     private let titleLabel: UILabel = UILabel()
     private let descriptionLabel: UILabel = UILabel()
+    private let timeToReadStack: UIStackView = UIStackView()
+    private let timeToReadImage: UIImageView = UIImageView()
+    private let timeToReadLabel: UILabel = UILabel()
+    private let dateStack: UIStackView = UIStackView()
+    private let dateImage: UIImageView = UIImageView()
+    private let dateLabel: UILabel = UILabel()
     private let textWrap: UIView = UIView()
     private let backgroundImage: UIImageView = UIImageView()
     private let bookmarkButton: UIButton = UIButton(type: .system)
@@ -70,6 +108,7 @@ final class ArticleCell: UITableViewCell {
     
     // MARK: - Variables
     var onShareButtonTapped: ((String?) -> Void)?
+    var onBookmarkButtonTapped: ((String?) -> Void)?
     
     private(set) var articleUrl: String?
     
@@ -85,17 +124,26 @@ final class ArticleCell: UITableViewCell {
     }
     
     // MARK: - Public Methods
-    func configureText(with article: Models.ArticleModel) {
+    func configure(with article: Models.ArticleModel) {
         titleLabel.text = article.title
         descriptionLabel.text = article.announce
         articleUrl = article.sourceLink
-        
+        timeToReadLabel.text = article.timeOfReading
+        dateLabel.text = article.date?.convertDateFormat()
     }
     
     func configureImage(with image: UIImage?) {
         guard let img = image else { return }
         wrapImage.image = img
         backgroundImage.image = img
+    }
+    
+    func markArticle() {
+        
+    }
+    
+    func unmarkArticle() {
+        
     }
     
     // MARK: - Private Methods
@@ -106,6 +154,8 @@ final class ArticleCell: UITableViewCell {
         configureBackgroundImage()
         configureWrapImage()
         configureTextWrap()
+        configureTimeToReadStack()
+        configureDateStack()
         configureDescriptionLabel()
         configureTitleLabel()
         configureBookmarkButton()
@@ -134,6 +184,8 @@ final class ArticleCell: UITableViewCell {
         
         bookmarkButton.pinTop(to: wrapImage.topAnchor, Constants.bookmarkButtonTopIndent)
         bookmarkButton.pinRight(to: wrapImage.trailingAnchor, Constants.bookmarkButtonTrailingIndent)
+        
+        bookmarkButton.addTarget(self, action: #selector(bookmarkButtonPressed), for: .touchUpInside)
     }
     
     private func configureTextWrap() {
@@ -145,6 +197,62 @@ final class ArticleCell: UITableViewCell {
         textWrap.pinCenterX(to: wrapImage.centerXAnchor)
         textWrap.pinWidth(to: wrapImage.widthAnchor)
         textWrap.pinBottom(to: wrapImage.bottomAnchor)
+    }
+    
+    private func configureTimeToReadStack() {
+        configureTimeToReadImage()
+        configureTimeToReadLabel()
+        
+        timeToReadStack.addArrangedSubview(timeToReadImage)
+        timeToReadStack.addArrangedSubview(timeToReadLabel)
+        timeToReadStack.axis = .horizontal
+        timeToReadStack.spacing = Constants.timeToReadStackSpacingValue
+        timeToReadStack.alignment = .leading
+        
+        textWrap.addSubview(timeToReadStack)
+        
+        timeToReadStack.pinLeft(to: textWrap.leadingAnchor, Constants.timeToReadStackLeadingIndent)
+        timeToReadStack.pinBottom(to: textWrap.bottomAnchor, Constants.timeToReadStackBottomIndent)
+    }
+    
+    private func configureTimeToReadImage() {
+        timeToReadImage.image = UIImage(systemName: Constants.timeToReadImageName)
+        timeToReadImage.contentMode = .scaleAspectFit
+        timeToReadImage.tintColor = Constants.timeToReadImageTintColor
+    }
+    
+    private func configureTimeToReadLabel() {
+        timeToReadLabel.textAlignment = Constants.timeToReadLabelTextAlignment
+        timeToReadLabel.textColor = Constants.timeToReadLabelTextColor
+        timeToReadLabel.numberOfLines = Constants.timeToReadLabelNumberOfLines
+    }
+    
+    private func configureDateStack() {
+        configureDateImage()
+        configureDateLabel()
+        
+        dateStack.addArrangedSubview(dateImage)
+        dateStack.addArrangedSubview(dateLabel)
+        dateStack.axis = .horizontal
+        dateStack.spacing = Constants.dateStackSpacingValue
+        dateStack.alignment = .trailing
+        
+        textWrap.addSubview(dateStack)
+        
+        dateStack.pinRight(to: textWrap.trailingAnchor, Constants.dateStackTrailingIndent)
+        dateStack.pinBottom(to: textWrap.bottomAnchor, Constants.dateStackBottomIndent)
+    }
+    
+    private func configureDateImage() {
+        dateImage.image = UIImage(systemName: Constants.dateImageName)
+        dateImage.contentMode = .scaleAspectFit
+        dateImage.tintColor = Constants.dateImageTintColor
+    }
+    
+    private func configureDateLabel() {
+        dateLabel.textAlignment = Constants.dateLabelTextAlignment
+        dateLabel.textColor = Constants.dateLabelTextColor
+        dateLabel.numberOfLines = Constants.dateLabelNumberOfLines
     }
     
     private func configureBackgroundImage() {
@@ -186,7 +294,7 @@ final class ArticleCell: UITableViewCell {
         descriptionLabel.numberOfLines = Constants.descriptionLabelNumberOfLines
         descriptionLabel.pinCenterX(to: textWrap.centerXAnchor)
         descriptionLabel.pinLeft(to: textWrap.leadingAnchor, Constants.descriptionLabelLeadingIndent)
-        descriptionLabel.pinBottom(to: textWrap.bottomAnchor, Constants.descriptionLabelBottomIndent)
+        descriptionLabel.pinBottom(to: timeToReadLabel.topAnchor, Constants.descriptionLabelBottomIndent)
     }
     
     private func configureTitleLabel() {
@@ -208,5 +316,12 @@ final class ArticleCell: UITableViewCell {
     private func shareButtonPressed() {
         guard let url = articleUrl else { return }
         onShareButtonTapped?(url)
+    }
+    
+    @objc
+    private func bookmarkButtonPressed() {
+        // ВРЕМЕННОЕ РЕШЕНИЕ
+        bookmarkButton.tintColor = .systemYellow.withAlphaComponent(0.85)
+        bookmarkButton.setImage(UIImage(systemName: "bookmark.fill"), for: .normal)
     }
 }

@@ -27,6 +27,16 @@ final class NewsViewController: UIViewController {
         static let tableLastSectionBottomIndent: CGFloat = 0
         static let tableFirstRowIndex: Int = 0
         static let tableFirstSectionIndex: Int = 0
+        
+        // leadingSwipeAction
+        static let tableLeadingSwipeActionShareTitle: String = "Share"
+        static let tableLeadingSwipeActionShareImageName: String = "square.and.arrow.up"
+        static let tableLeadingSwipeActionShareBgColor: UIColor = .lightGray.withAlphaComponent(0.3)
+        
+        // trailingSwipeAction
+        static let tableTrailingSwipeActionMarkTitle: String = "Mark"
+        static let tableTrailingSwipeActionMarkImageName: String = "bookmark"
+        static let tableTrailingSwipeActionMarkBgColor: UIColor = .systemYellow.withAlphaComponent(0.3)
     }
     
     // MARK: - Variables
@@ -89,7 +99,7 @@ final class NewsViewController: UIViewController {
         view.backgroundColor = UIColor(patternImage: UIImage(named: Constants.bgImageName)!)
         
         // Размытие заднего фона
-        let blurEffect = UIBlurEffect(style: .light)
+        let blurEffect = UIBlurEffect(style: .dark)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
         view.addSubview(blurEffectView)
         
@@ -102,7 +112,6 @@ final class NewsViewController: UIViewController {
         table.backgroundColor = Constants.tableBgColor
         table.backgroundView = nil
         table.separatorStyle = .none
-        table.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 100, right: 0)
         
         table.pin(to: view)
         
@@ -172,6 +181,13 @@ final class NewsViewController: UIViewController {
 
 // MARK: - UITableViewDelegate
 extension NewsViewController: UITableViewDelegate {
+    private func handleBookmark() {
+        print("BOOKMARK")
+    }
+    
+    private func handleShare() {
+        print("SHARE")
+    }
 }
 
 // MARK: - UITableViewDataSource
@@ -204,7 +220,7 @@ extension NewsViewController: UITableViewDataSource {
         guard let articleCell = cell as? ArticleCell else { return cell }
         
         let currentArticle = interactor.articles[indexPath.section]
-        articleCell.configureText(with: currentArticle)
+        articleCell.configure(with: currentArticle)
         
         articleCell.onShareButtonTapped = { [weak self] url in
             guard let url = url else { return }
@@ -219,7 +235,33 @@ extension NewsViewController: UITableViewDataSource {
         return articleCell
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let action = UIContextualAction(style: .normal,
+                                        title: Constants.tableLeadingSwipeActionShareTitle) { [weak self] (_, _, completionHandler) in
+            self?.handleShare()
+            completionHandler(true)
+        }
         
+        action.backgroundColor = Constants.tableLeadingSwipeActionShareBgColor
+        action.image = UIImage(systemName: Constants.tableLeadingSwipeActionShareImageName)
+        
+        let configuration = UISwipeActionsConfiguration(actions: [action])
+        
+        return configuration
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let action = UIContextualAction(style: .normal,
+                                        title: Constants.tableTrailingSwipeActionMarkTitle) { [weak self] (_, _, completionHandler) in
+            self?.handleBookmark()
+            completionHandler(true)
+        }
+        
+        action.backgroundColor = Constants.tableTrailingSwipeActionMarkBgColor
+        action.image = UIImage(systemName: Constants.tableTrailingSwipeActionMarkImageName)
+        
+        let configuration = UISwipeActionsConfiguration(actions: [action])
+        
+        return configuration
     }
 }

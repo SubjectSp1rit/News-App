@@ -13,7 +13,7 @@ final class TabController: UITabBarController {
         // UI
         static let tabBarBackgroundColor: UIColor = .darkGray.withAlphaComponent(0.95)
         static let tabBarTintColor: UIColor = .systemGreen
-        static let tabBarUnselectedTintColor: UIColor = .systemGray2
+        static let tabBarUnselectedTintColor: UIColor = .lightGray
         static let firstGradientColor: CGColor = UIColor.lightGray.withAlphaComponent(0.95).cgColor
         static let secondGradientColor: CGColor = UIColor.clear.cgColor
         static let gradientLayerPosX: CGFloat = 0
