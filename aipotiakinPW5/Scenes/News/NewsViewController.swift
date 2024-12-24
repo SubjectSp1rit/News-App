@@ -48,6 +48,8 @@ final class NewsViewController: UIViewController {
     private let refreshControl: UIRefreshControl = UIRefreshControl()
     private let loadFreshNewsButton: UIButton = UIButton(type: .system)
     
+    private var retryTimer: Timer?
+    
     // MARK: - Lifecycle
     init(interactor: (NewsBusinessLogic & NewsDataStore)) {
         self.interactor = interactor
@@ -70,6 +72,11 @@ final class NewsViewController: UIViewController {
         refreshControl.endRefreshing() // Новости загружены - завершаем прокрутку
         table.reloadData()
         scrollToTopIfNeeded() // Переносим пользователя к первой новости
+        
+        if !interactor.articles.isEmpty { // Если новости загрузились - завершаем попытку загрузить новости
+            retryTimer?.invalidate()
+            retryTimer = nil
+        }
     }
     
     func displayImageInCell(_ viewModel: Models.FetchImage.ViewModel) {
@@ -153,6 +160,11 @@ final class NewsViewController: UIViewController {
     
     private func loadFreshNews() {
         interactor.loadFreshNews(Models.FetchArticles.Request())
+        
+        // Запускаем повторную попытку загрузки новостей через секунду на повторе
+        retryTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { _ in
+            self.interactor.loadFreshNews(Models.FetchArticles.Request())
+        })
     }
     
     // MARK: - Actions
