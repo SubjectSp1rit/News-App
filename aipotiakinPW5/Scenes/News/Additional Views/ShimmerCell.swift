@@ -18,10 +18,10 @@ class ShimmerCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupShimmerView()
     }
-
+    
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupShimmerView()
+        fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - Public Methods

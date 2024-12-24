@@ -24,7 +24,6 @@ final class NewsViewController: UIViewController {
         static let tableNumberOfRowsInSection: Int = 1
         static let tableBgColor: UIColor = .clear
         static let tableSectionBottomIndent: CGFloat = 10
-        static let tableLastSectionBottomIndent: CGFloat = 0
         static let tableFirstRowIndex: Int = 0
         static let tableFirstSectionIndex: Int = 0
         static let minimumTableNumberOfSections: Int = 8
@@ -71,11 +70,12 @@ final class NewsViewController: UIViewController {
     func displayFetchedArticles(_ viewModel: Models.FetchArticles.ViewModel) {
         refreshControl.endRefreshing() // Новости загружены - завершаем прокрутку
         table.reloadData()
-        scrollToTopIfNeeded() // Переносим пользователя к первой новости
         
         if !interactor.articles.isEmpty { // Если новости загрузились - завершаем попытку загрузить новости
             retryTimer?.invalidate()
             retryTimer = nil
+            
+            scrollToTopIfNeeded() // Переносим пользователя к первой новости
         }
     }
     
@@ -135,8 +135,10 @@ final class NewsViewController: UIViewController {
         table.refreshControl = refreshControl
         table.delegate = self
         table.dataSource = self
+        table.showsVerticalScrollIndicator = false
         table.register(ArticleCell.self, forCellReuseIdentifier: ArticleCell.reuseId)
         table.register(ShimmerCell.self, forCellReuseIdentifier: ShimmerCell.reuseId)
+        table.register(LoadMoreArticlesCell.self, forCellReuseIdentifier: LoadMoreArticlesCell.reuseId)
         
         loadFreshNews()
     }
@@ -165,6 +167,10 @@ final class NewsViewController: UIViewController {
         retryTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { _ in
             self.interactor.loadFreshNews(Models.FetchArticles.Request())
         })
+    }
+    
+    private func loadMoreNews() {
+        print("Load News Button Pressed")
     }
     
     // MARK: - Actions
@@ -224,7 +230,7 @@ extension NewsViewController: UITableViewDataSource {
         if quantity == 0 { // Если отображаем ячейки
             return Constants.minimumTableNumberOfSections
         }
-        return interactor.articles.count
+        return interactor.articles.count + 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -232,9 +238,7 @@ extension NewsViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        // У последней ячейки снизу нет отступа, у всех остальных 10
-        let lastSectionIndex = interactor.articles.count - 1
-        return section == lastSectionIndex ? Constants.tableLastSectionBottomIndent : Constants.tableSectionBottomIndent
+        return Constants.tableSectionBottomIndent
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
@@ -245,43 +249,57 @@ extension NewsViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if interactor.articles.isEmpty {
+        if interactor.articles.isEmpty { // Если нет новостей - показываем заглушки
             let cell = table.dequeueReusableCell(withIdentifier: ShimmerCell.reuseId, for: indexPath)
             guard let shimmerCell = cell as? ShimmerCell else { return cell }
             shimmerCell.startShimmer()
             return shimmerCell
-        } else {
-            let cell = table.dequeueReusableCell(withIdentifier: ArticleCell.reuseId,
-                                                 for: indexPath)
-            cell.selectionStyle = .none
-            guard let articleCell = cell as? ArticleCell else { return cell }
-            
-            let currentArticle = interactor.articles[indexPath.section]
-            articleCell.configure(with: currentArticle)
-            
-            if (interactor.markedArticles.contains(where: { $0.sourceLink == currentArticle.sourceLink })) {
-                articleCell.configureMark(for: true)
-            } else {
-                articleCell.configureMark(for: false)
-            }
-            
-            articleCell.onShareButtonTapped = { [weak self] url in
-                guard let url = url else { return }
-                self?.interactor.presentShareSheet(Models.ShareSheet.Request(url: url))
-            }
-            
-            articleCell.onBookmarkButtonTapped = { [weak self] url in
-                guard let url = url else { return }
-                self?.interactor.configureMarkedArticle(Models.MarkArticle.Request(url: url, indexPath: indexPath))
-            }
-            
-            // Скачиваем картинку
-            if let url = currentArticle.img?.url {
-                interactor.loadImage(Models.FetchImage.Request(url: url, indexPath: indexPath))
-            }
-
-            return articleCell
         }
+        
+        let loadMoreArticlesButtonIndex = interactor.articles.count
+        if indexPath.section == loadMoreArticlesButtonIndex {
+            let cell = table.dequeueReusableCell(withIdentifier: LoadMoreArticlesCell.reuseId,
+                                                 for: indexPath)
+            guard let loadMoreArticlesCell = cell as? LoadMoreArticlesCell else { return cell }
+            
+            loadMoreArticlesCell.onLoadMoreArticlesButtonPressed = { [weak self] in
+                self?.loadMoreNews()
+            }
+            
+            return loadMoreArticlesCell
+        }
+        
+        let cell = table.dequeueReusableCell(withIdentifier: ArticleCell.reuseId,
+                                             for: indexPath)
+        cell.selectionStyle = .none
+        guard let articleCell = cell as? ArticleCell else { return cell }
+        
+        let currentArticle = interactor.articles[indexPath.section]
+        articleCell.configure(with: currentArticle)
+        articleCell.resetImages()
+        
+        if (interactor.markedArticles.contains(where: { $0.sourceLink == currentArticle.sourceLink })) {
+            articleCell.configureMark(for: true)
+        } else {
+            articleCell.configureMark(for: false)
+        }
+        
+        articleCell.onShareButtonTapped = { [weak self] url in
+            guard let url = url else { return }
+            self?.interactor.presentShareSheet(Models.ShareSheet.Request(url: url))
+        }
+        
+        articleCell.onBookmarkButtonTapped = { [weak self] url in
+            guard let url = url else { return }
+            self?.interactor.configureMarkedArticle(Models.MarkArticle.Request(url: url, indexPath: indexPath))
+        }
+        
+        // Скачиваем картинку
+        if let url = currentArticle.img?.url {
+            interactor.loadImage(Models.FetchImage.Request(url: url, indexPath: indexPath))
+        }
+
+        return articleCell
     }
     
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -291,6 +309,10 @@ extension NewsViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let loadMoreArticlesButtonSectionIndex = interactor.articles.count
+        if indexPath.section == loadMoreArticlesButtonSectionIndex { return nil }
+        if interactor.articles.isEmpty { return nil }
+        
         let action = UIContextualAction(style: .normal,
                                         title: Constants.tableLeadingSwipeActionShareTitle) { [weak self] (_, _, completionHandler) in
             self?.handleShare(for: indexPath)
@@ -306,6 +328,10 @@ extension NewsViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let loadMoreArticlesButtonSectionIndex = interactor.articles.count
+        if indexPath.section == loadMoreArticlesButtonSectionIndex { return nil }
+        if interactor.articles.isEmpty { return nil }
+        
         let action = UIContextualAction(style: .normal,
                                         title: Constants.tableTrailingSwipeActionMarkTitle) { [weak self] (_, _, completionHandler) in
             self?.handleBookmark(for: indexPath)

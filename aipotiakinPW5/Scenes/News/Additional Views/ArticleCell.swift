@@ -122,7 +122,7 @@ final class ArticleCell: UITableViewCell {
     
     @available(*, unavailable)
         required init?(coder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
+        fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - Public Methods
@@ -140,6 +140,11 @@ final class ArticleCell: UITableViewCell {
         backgroundImage.image = image
     }
     
+    func resetImages() {
+        wrapImage.image = nil
+        backgroundImage.image = nil
+    }
+    
     /// Перекрашивает "bookmark"
     /// Входные параметры: state - true, если нужно закрасить в желтый, иначе стандартный цвет
     func configureMark(for state: Bool) {
@@ -150,14 +155,6 @@ final class ArticleCell: UITableViewCell {
             bookmarkButton.tintColor = Constants.bookmarkButtonTintColor
             bookmarkButton.setImage(UIImage(systemName: Constants.bookmarkButtonImageName), for: .normal)
         }
-    }
-    
-    func markArticle() {
-        
-    }
-    
-    func unmarkArticle() {
-        
     }
     
     // MARK: - Private Methods
