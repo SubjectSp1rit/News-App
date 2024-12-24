@@ -27,6 +27,7 @@ final class NewsViewController: UIViewController {
         static let tableLastSectionBottomIndent: CGFloat = 0
         static let tableFirstRowIndex: Int = 0
         static let tableFirstSectionIndex: Int = 0
+        static let minimumTableNumberOfSections: Int = 8
         
         // leadingSwipeAction
         static let tableLeadingSwipeActionShareTitle: String = "Share"
@@ -128,6 +129,7 @@ final class NewsViewController: UIViewController {
         table.delegate = self
         table.dataSource = self
         table.register(ArticleCell.self, forCellReuseIdentifier: ArticleCell.reuseId)
+        table.register(ShimmerCell.self, forCellReuseIdentifier: ShimmerCell.reuseId)
         
         loadFreshNews()
     }
@@ -206,6 +208,10 @@ extension NewsViewController: UITableViewDelegate {
 // MARK: - UITableViewDataSource
 extension NewsViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
+        let quantity = interactor.articles.count
+        if quantity == 0 { // Если отображаем ячейки
+            return Constants.minimumTableNumberOfSections
+        }
         return interactor.articles.count
     }
     
@@ -227,36 +233,49 @@ extension NewsViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = table.dequeueReusableCell(withIdentifier: ArticleCell.reuseId,
-                                             for: indexPath)
-        cell.selectionStyle = .none
-        guard let articleCell = cell as? ArticleCell else { return cell }
-        
-        let currentArticle = interactor.articles[indexPath.section]
-        articleCell.configure(with: currentArticle)
-        
-        if (interactor.markedArticles.contains(where: { $0.sourceLink == currentArticle.sourceLink })) {
-            articleCell.configureMark(for: true)
+        if interactor.articles.isEmpty {
+            let cell = table.dequeueReusableCell(withIdentifier: ShimmerCell.reuseId, for: indexPath)
+            guard let shimmerCell = cell as? ShimmerCell else { return cell }
+            shimmerCell.startShimmer()
+            return shimmerCell
         } else {
-            articleCell.configureMark(for: false)
-        }
-        
-        articleCell.onShareButtonTapped = { [weak self] url in
-            guard let url = url else { return }
-            self?.interactor.presentShareSheet(Models.ShareSheet.Request(url: url))
-        }
-        
-        articleCell.onBookmarkButtonTapped = { [weak self] url in
-            guard let url = url else { return }
-            self?.interactor.configureMarkedArticle(Models.MarkArticle.Request(url: url, indexPath: indexPath))
-        }
-        
-        // Скачиваем картинку
-        if let url = currentArticle.img?.url {
-            interactor.loadImage(Models.FetchImage.Request(url: url, indexPath: indexPath))
-        }
+            let cell = table.dequeueReusableCell(withIdentifier: ArticleCell.reuseId,
+                                                 for: indexPath)
+            cell.selectionStyle = .none
+            guard let articleCell = cell as? ArticleCell else { return cell }
+            
+            let currentArticle = interactor.articles[indexPath.section]
+            articleCell.configure(with: currentArticle)
+            
+            if (interactor.markedArticles.contains(where: { $0.sourceLink == currentArticle.sourceLink })) {
+                articleCell.configureMark(for: true)
+            } else {
+                articleCell.configureMark(for: false)
+            }
+            
+            articleCell.onShareButtonTapped = { [weak self] url in
+                guard let url = url else { return }
+                self?.interactor.presentShareSheet(Models.ShareSheet.Request(url: url))
+            }
+            
+            articleCell.onBookmarkButtonTapped = { [weak self] url in
+                guard let url = url else { return }
+                self?.interactor.configureMarkedArticle(Models.MarkArticle.Request(url: url, indexPath: indexPath))
+            }
+            
+            // Скачиваем картинку
+            if let url = currentArticle.img?.url {
+                interactor.loadImage(Models.FetchImage.Request(url: url, indexPath: indexPath))
+            }
 
-        return articleCell
+            return articleCell
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if let shimmerCell = cell as? ShimmerCell { // Завершение мерцания
+            shimmerCell.stopShimmer()
+        }
     }
     
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
