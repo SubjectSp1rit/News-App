@@ -85,6 +85,7 @@ final class SavedNewsViewController: UIViewController {
         } else { // Иначе красим в желтый
             articleCell.configureMark(for: true)
         }
+        table.reloadData()
     }
     
     // MARK: - Private Methods
@@ -155,7 +156,8 @@ extension SavedNewsViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        if interactor.markedArticles.count == section && !interactor.markedArticles.isEmpty {
+        let lastSectionIndex = interactor.markedArticles.count - 1
+        if lastSectionIndex == section && !interactor.markedArticles.isEmpty {
             return Constants.tableLastSectionBottomIndent
         }
         return Constants.tableSectionBottomIndent
