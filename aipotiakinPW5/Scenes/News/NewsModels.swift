@@ -8,7 +8,7 @@
 import UIKit
 
 enum Models {
-    struct ArticleModel: Decodable {
+    struct ArticleModel: Decodable, Encodable {
         var newsId: Int?
         var title: String?
         var announce: String?
@@ -24,7 +24,7 @@ enum Models {
         }
     }
     
-    struct ImageContainer: Decodable {
+    struct ImageContainer: Decodable, Encodable {
         var url: URL?
     }
     
@@ -104,5 +104,11 @@ enum Models {
             var indexPath: IndexPath
             var removed: Bool
         }
+    }
+    
+    enum UpdateArticles {
+        struct Request { }
+        struct Response { }
+        struct ViewModel { }
     }
 }

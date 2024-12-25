@@ -36,15 +36,4 @@ final class UserDefaultsManager {
             fatalError("Error when loading from UserDefaults")
         }
     }
-    
-    // MARK: - Language Management
-    
-    func setLanguage(_ language: String) {
-        defaults.set([language], forKey: "AppleLanguages")
-        defaults.synchronize()
-    }
-    
-    func loadLanguage() -> [String] {
-        return defaults.array(forKey: "AppleLanguages") as? [String] ?? ["en"]
-    }
 }

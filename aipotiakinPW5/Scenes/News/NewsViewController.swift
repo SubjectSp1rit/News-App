@@ -67,6 +67,11 @@ final class NewsViewController: UIViewController {
         configureUI()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        interactor.updateArticles(Models.UpdateArticles.Request())
+    }
+    
     // MARK: - Public Methods
     func displayFetchedArticles(_ viewModel: Models.FetchArticles.ViewModel) {
         refreshControl.endRefreshing() // Новости загружены - завершаем прокрутку
@@ -78,6 +83,10 @@ final class NewsViewController: UIViewController {
             
             scrollToTopIfNeeded() // Переносим пользователя к первой новости
         }
+    }
+    
+    func displayUpdatedArticles(_ viewModel: Models.UpdateArticles.ViewModel) {
+        table.reloadData()
     }
     
     func displayMoreFetchedArticles(_ viewModel: Models.FetchMoreArticles.ViewModel) {
@@ -230,7 +239,7 @@ extension NewsViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        if interactor.articles.count == section && !interactor.articles.isEmpty{
+        if interactor.articles.count == section && !interactor.articles.isEmpty {
             return Constants.tableLastSectionBottomIndent
         }
         return Constants.tableSectionBottomIndent

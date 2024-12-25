@@ -12,15 +12,20 @@ final class NewsInteractor: NewsBusinessLogic, NewsDataStore {
     private let presenter: NewsPresentationLogic
     private let worker: NewsWorker = NewsWorker()
     
+    private enum Constants {
+        // UserDefaults
+        static let savedArticlesKey: String = "SavedArticles"
+    }
+    
     // MARK: - Variables
     internal var articles: [Models.ArticleModel] = [] {
         didSet {
             presenter.presentNews(Models.FetchArticles.Response(pageIndex: currentNewsPage))
         }
     }
-    internal var markedArticles: [Models.ArticleModel] = [] {
+    internal var markedArticles: [Models.ArticleModel] = UserDefaultsManager.shared.load(forKey: Constants.savedArticlesKey) {
         didSet {
-            print(markedArticles.count)
+            UserDefaultsManager.shared.save(markedArticles, forKey: Constants.savedArticlesKey)
         }
     }
     
@@ -82,6 +87,11 @@ final class NewsInteractor: NewsBusinessLogic, NewsDataStore {
     
     func openWebNewsView(_ request: Models.OpenWebView.Request) {
         presenter.routeToWebNewsView(Models.OpenWebView.Response(url: request.url))
+    }
+    
+    func updateArticles(_ request: Models.UpdateArticles.Request) {
+        markedArticles = UserDefaultsManager.shared.load(forKey: Constants.savedArticlesKey)
+        presenter.presentUpdatedArticles(Models.UpdateArticles.Response())
     }
     
     func configureMarkedArticle(_ request: Models.MarkArticle.Request) {

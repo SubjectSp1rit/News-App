@@ -42,7 +42,6 @@ final class SavedNewsViewController: UIViewController {
     private let table: UITableView = UITableView(frame: .zero)
     
     // MARK: - Variables
-    private var retryTimer: Timer?
     private var interactor: (SavedNewsBusinessLogic & SavedNewsDataStore)
     
     // MARK: - Lifecycle
@@ -61,10 +60,57 @@ final class SavedNewsViewController: UIViewController {
         configureUI()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        loadSavedNews()
+    }
+    
+    // MARK: - Public Methods
+    func displayFetchedArticles(_ viewModel: SavedNewsModels.FetchArticles.ViewModel) {
+        table.reloadData()
+    }
+    
+    func displayImageInCell(_ viewModel: SavedNewsModels.FetchImage.ViewModel) {
+        guard let articleCell = table.cellForRow(at: viewModel.indexPath) as? ArticleCell else { return }
+        let imgUrlFromCell = articleCell.imgUrl
+        let imgUrlFromPresenter = viewModel.url.absoluteString
+        guard imgUrlFromCell == imgUrlFromPresenter else { return } // Проверка что ячейка имеет тот же url картинки
+        articleCell.configureImage(with: viewModel.fetchedImage)
+    }
+    
+    func displayMarkedArticleInCell(_ viewModel: SavedNewsModels.MarkArticle.ViewModel) {
+        guard let articleCell = table.cellForRow(at: viewModel.indexPath) as? ArticleCell else { return }
+        if viewModel.removed { // Если удалили - красим в стандартный цвет
+            articleCell.configureMark(for: false)
+        } else { // Иначе красим в желтый
+            articleCell.configureMark(for: true)
+        }
+    }
+    
     // MARK: - Private Methods
+    private func loadSavedNews() {
+        interactor.fetchArticles(SavedNewsModels.FetchArticles.Request())
+    }
+    
     private func configureUI() {
         configureNavBar()
         configureBackground()
+        configureTable()
+    }
+    
+    private func configureTable() {
+        view.addSubview(table)
+        
+        table.backgroundColor = Constants.tableBgColor
+        table.backgroundView = nil
+        table.separatorStyle = .none
+        
+        table.pin(to: view)
+        
+        table.delegate = self
+        table.dataSource = self
+        table.showsVerticalScrollIndicator = false
+        table.register(ArticleCell.self, forCellReuseIdentifier: ArticleCell.reuseId)
     }
     
     private func configureNavBar() {
@@ -82,3 +128,120 @@ final class SavedNewsViewController: UIViewController {
         blurEffectView.pin(to: view)
     }
 }
+
+// MARK: - UITableViewDelegate
+extension SavedNewsViewController: UITableViewDelegate {
+    private func handleBookmark(for indexPath: IndexPath) {
+        guard let articleCell = table.cellForRow(at: indexPath) as? ArticleCell else { return }
+        guard let url = articleCell.articleUrl else { return }
+        interactor.configureMarkedArticle(SavedNewsModels.MarkArticle.Request(url: url, indexPath: indexPath))
+    }
+    
+    private func handleShare(for indexPath: IndexPath) {
+        guard let articleCell = table.cellForRow(at: indexPath) as? ArticleCell else { return }
+        guard let url = articleCell.articleUrl else { return }
+        interactor.presentShareSheet(SavedNewsModels.ShareSheet.Request(url: url))
+    }
+}
+
+// MARK: - UITableViewDataSource
+extension SavedNewsViewController: UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return interactor.markedArticles.count
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return Constants.tableNumberOfRowsInSection
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        if interactor.markedArticles.count == section && !interactor.markedArticles.isEmpty {
+            return Constants.tableLastSectionBottomIndent
+        }
+        return Constants.tableSectionBottomIndent
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        // Вью-заглушка для отступа под каждой секцией
+        let spacerView: UIView = UIView()
+        spacerView.backgroundColor = .clear
+        return spacerView
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = table.dequeueReusableCell(withIdentifier: ArticleCell.reuseId,
+                                             for: indexPath)
+        cell.selectionStyle = .none
+        guard let articleCell = cell as? ArticleCell else { return cell }
+        
+        let currentArticle = interactor.markedArticles[indexPath.section]
+        articleCell.configure(with: currentArticle)
+        articleCell.setShimmerImage()
+        
+        if (interactor.markedArticles.contains(where: { $0.sourceLink == currentArticle.sourceLink })) {
+            articleCell.configureMark(for: true)
+        } else {
+            articleCell.configureMark(for: false)
+        }
+        
+        articleCell.onShareButtonTapped = { [weak self] url in
+            guard let url = url else { return }
+            self?.interactor.presentShareSheet(SavedNewsModels.ShareSheet.Request(url: url))
+        }
+        
+        articleCell.onBookmarkButtonTapped = { [weak self] url in
+            guard let url = url else { return }
+            self?.interactor.configureMarkedArticle(SavedNewsModels.MarkArticle.Request(url: url, indexPath: indexPath))
+        }
+        
+        // Скачиваем картинку
+        if let url = currentArticle.img?.url {
+            interactor.loadImage(SavedNewsModels.FetchImage.Request(url: url, indexPath: indexPath))
+        }
+
+        return articleCell
+    }
+    
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        if interactor.markedArticles.isEmpty { return nil }
+        
+        let action = UIContextualAction(style: .normal,
+                                        title: Constants.tableLeadingSwipeActionShareTitle) { [weak self] (_, _, completionHandler) in
+            self?.handleShare(for: indexPath)
+            completionHandler(true)
+        }
+        
+        action.backgroundColor = Constants.tableLeadingSwipeActionShareBgColor
+        action.image = UIImage(systemName: Constants.tableLeadingSwipeActionShareImageName)
+        
+        let configuration = UISwipeActionsConfiguration(actions: [action])
+        
+        return configuration
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        if interactor.markedArticles.isEmpty { return nil }
+        
+        let action = UIContextualAction(style: .normal,
+                                        title: Constants.tableTrailingSwipeActionMarkTitle) { [weak self] (_, _, completionHandler) in
+            self?.handleBookmark(for: indexPath)
+            completionHandler(true)
+        }
+        
+        action.backgroundColor = Constants.tableTrailingSwipeActionMarkBgColor
+        action.image = UIImage(systemName: Constants.tableTrailingSwipeActionMarkImageName)
+        
+        let configuration = UISwipeActionsConfiguration(actions: [action])
+        
+        return configuration
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let articleCell = table.cellForRow(at: indexPath) as? ArticleCell else { return }
+        guard let urlString = articleCell.articleUrl else { return }
+        guard let url = URL(string: urlString) else { return }
+        
+        interactor.openWebNewsView(SavedNewsModels.OpenWebView.Request(url: url))
+    }
+}
+

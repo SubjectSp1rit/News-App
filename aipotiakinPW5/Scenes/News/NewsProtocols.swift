@@ -20,6 +20,7 @@ protocol NewsBusinessLogic {
     func presentShareSheet(_ request: Models.ShareSheet.Request)
     func configureMarkedArticle(_ request: Models.MarkArticle.Request)
     func openWebNewsView(_ request: Models.OpenWebView.Request)
+    func updateArticles(_ request: Models.UpdateArticles.Request)
 }
 
 protocol NewsPresentationLogic {
@@ -29,4 +30,5 @@ protocol NewsPresentationLogic {
     func presentShareSheet(_ response: Models.ShareSheet.Response)
     func presentMarkedArticle(_ response: Models.MarkArticle.Response)
     func routeToWebNewsView(_ response: Models.OpenWebView.Response)
+    func presentUpdatedArticles(_ response: Models.UpdateArticles.Response)
 }
