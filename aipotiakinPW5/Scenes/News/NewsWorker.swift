@@ -16,8 +16,8 @@ final class NewsWorker {
     private var newsPage: Models.NewsPage = Models.NewsPage()
     
     // MARK: - Public Methods
-    func fetchNews(completion: @escaping ([Models.ArticleModel]) -> Void) {
-        guard let url = getUrl(4, 1) else {
+    func fetchNews(page: Int, completion: @escaping ([Models.ArticleModel]) -> Void) {
+        guard let url = getUrl(4, page) else {
             completion([]) // Возвращаем пустой массив, если URL невалиден
             return
         }

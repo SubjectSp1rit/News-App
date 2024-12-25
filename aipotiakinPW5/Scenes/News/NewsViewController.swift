@@ -24,6 +24,7 @@ final class NewsViewController: UIViewController {
         static let tableNumberOfRowsInSection: Int = 1
         static let tableBgColor: UIColor = .clear
         static let tableSectionBottomIndent: CGFloat = 10
+        static let tableLastSectionBottomIndent: CGFloat = 0
         static let tableFirstRowIndex: Int = 0
         static let tableFirstSectionIndex: Int = 0
         static let minimumTableNumberOfSections: Int = 8
@@ -47,6 +48,7 @@ final class NewsViewController: UIViewController {
     private let refreshControl: UIRefreshControl = UIRefreshControl()
     private let loadFreshNewsButton: UIButton = UIButton(type: .system)
     
+    // MARK: - Variables
     private var retryTimer: Timer?
     
     // MARK: - Lifecycle
@@ -77,6 +79,10 @@ final class NewsViewController: UIViewController {
             
             scrollToTopIfNeeded() // Переносим пользователя к первой новости
         }
+    }
+    
+    func displayMoreFetchedArticles(_ viewModel: Models.FetchMoreArticles.ViewModel) {
+        table.reloadData()
     }
     
     func displayImageInCell(_ viewModel: Models.FetchImage.ViewModel) {
@@ -170,7 +176,7 @@ final class NewsViewController: UIViewController {
     }
     
     private func loadMoreNews() {
-        print("Load News Button Pressed")
+        interactor.loadMoreNews(Models.FetchMoreArticles.Request())
     }
     
     // MARK: - Actions
@@ -238,6 +244,9 @@ extension NewsViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        if interactor.articles.count == section && !interactor.articles.isEmpty{
+            return Constants.tableLastSectionBottomIndent
+        }
         return Constants.tableSectionBottomIndent
     }
     

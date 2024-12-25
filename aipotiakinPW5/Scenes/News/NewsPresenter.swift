@@ -14,7 +14,15 @@ final class NewsPresenter: NewsPresentationLogic {
     
     // MARK: - Public Methods
     func presentNews(_ response: Models.FetchArticles.Response) {
-        view?.displayFetchedArticles(Models.FetchArticles.ViewModel())
+        if response.pageIndex == 1 {
+            view?.displayFetchedArticles(Models.FetchArticles.ViewModel())
+        } else {
+            presentMoreNews(Models.FetchMoreArticles.Response(pageIndex: response.pageIndex))
+        }
+    }
+    
+    func presentMoreNews(_ response: Models.FetchMoreArticles.Response) {
+        view?.displayMoreFetchedArticles(Models.FetchMoreArticles.ViewModel(pageIndex: response.pageIndex))
     }
     
     func presentImageToCell(_ response: Models.FetchImage.Response) {

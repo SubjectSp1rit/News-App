@@ -41,9 +41,19 @@ enum Models {
     enum FetchArticles {
         struct Request { }
         struct Response {
-            var articles: [ArticleModel]
+            var pageIndex: Int
         }
         struct ViewModel { }
+    }
+    
+    enum FetchMoreArticles {
+        struct Request { }
+        struct Response {
+            var pageIndex: Int
+        }
+        struct ViewModel {
+            var pageIndex: Int
+        }
     }
     
     enum FetchImage {

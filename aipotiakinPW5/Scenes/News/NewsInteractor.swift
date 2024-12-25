@@ -15,11 +15,11 @@ final class NewsInteractor: NewsBusinessLogic, NewsDataStore {
     // MARK: - Variables
     internal var articles: [Models.ArticleModel] = [] {
         didSet {
-            presenter.presentNews(Models.FetchArticles.Response(articles: articles))
+            presenter.presentNews(Models.FetchArticles.Response(pageIndex: currentNewsPage))
         }
     }
     internal var markedArticles: [Models.ArticleModel] = []
-    
+    private var currentNewsPage: Int = 1
     private var isLoading: Bool = false
     
     // MARK: - Lifecycle
@@ -32,11 +32,28 @@ final class NewsInteractor: NewsBusinessLogic, NewsDataStore {
         // Если новости уже загружаются - ничего не делаем
         guard !isLoading else { return }
         isLoading = true
-        // Передаем в воркер функцию, которая выполнится после того, как fetchNews отработает
+        currentNewsPage = 1
+        
         DispatchQueue.global().async {
-            self.worker.fetchNews(completion: { articles in
+            self.worker.fetchNews(page: self.currentNewsPage, completion: { articles in
                 DispatchQueue.main.async {
                     self.articles = articles
+                    self.isLoading = false
+                }
+            })
+        }
+    }
+    
+    func loadMoreNews(_ request: Models.FetchMoreArticles.Request) {
+        // Если новости уже загружаются - ничего не делаем
+        guard !isLoading else { return }
+        isLoading = true
+        currentNewsPage += 1
+        
+        DispatchQueue.global().async {
+            self.worker.fetchNews(page: self.currentNewsPage, completion: { articles in
+                DispatchQueue.main.async {
+                    self.articles.append(contentsOf: articles)
                     self.isLoading = false
                 }
             })
