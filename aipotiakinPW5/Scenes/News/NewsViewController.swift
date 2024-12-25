@@ -39,9 +39,7 @@ final class NewsViewController: UIViewController {
         static let tableTrailingSwipeActionMarkImageName: String = "bookmark"
         static let tableTrailingSwipeActionMarkBgColor: UIColor = .systemYellow
     }
-    
-    // MARK: - Variables
-    private var interactor: (NewsBusinessLogic & NewsDataStore)
+
     
     // MARK: - UI Components
     private let table: UITableView = UITableView(frame: .zero)
@@ -50,6 +48,7 @@ final class NewsViewController: UIViewController {
     
     // MARK: - Variables
     private var retryTimer: Timer?
+    private var interactor: (NewsBusinessLogic & NewsDataStore)
     
     // MARK: - Lifecycle
     init(interactor: (NewsBusinessLogic & NewsDataStore)) {
