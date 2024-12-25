@@ -75,6 +75,10 @@ final class NewsInteractor: NewsBusinessLogic, NewsDataStore {
         presenter.presentShareSheet(Models.ShareSheet.Response(url: request.url))
     }
     
+    func openWebNewsView(_ request: Models.OpenWebView.Request) {
+        presenter.routeToWebNewsView(Models.OpenWebView.Response(url: request.url))
+    }
+    
     func configureMarkedArticle(_ request: Models.MarkArticle.Request) {
         guard let markedArticle = articles.first(where: { $0.sourceLink == request.url }) else { return }
         

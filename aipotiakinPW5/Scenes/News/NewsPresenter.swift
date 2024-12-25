@@ -35,6 +35,12 @@ final class NewsPresenter: NewsPresentationLogic {
         view?.present(activityVC, animated: true)
     }
     
+    func routeToWebNewsView(_ response: Models.OpenWebView.Response) {
+        let webVC = WebNewsAssembly.build(with: response.url)
+        
+        view?.present(webVC, animated: true)
+    }
+    
     func presentMarkedArticle(_ response: Models.MarkArticle.Response) {
         if response.removed {
             view?.displayMarkedArticleInCell(Models.MarkArticle.ViewModel(indexPath: response.indexPath, removed: true))

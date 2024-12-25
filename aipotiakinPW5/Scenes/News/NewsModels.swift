@@ -82,6 +82,15 @@ enum Models {
         }
     }
     
+    enum OpenWebView {
+        struct Request {
+            var url: URL
+        }
+        struct Response {
+            var url: URL
+        }
+    }
+    
     enum MarkArticle {
         struct Request {
             var url: String

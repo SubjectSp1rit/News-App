@@ -356,4 +356,16 @@ extension NewsViewController: UITableViewDataSource {
         
         return configuration
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let sectionIndex = indexPath.section
+        let loadMoreNewsButtonIndex = interactor.articles.count
+        guard sectionIndex != loadMoreNewsButtonIndex else { return }
+        
+        guard let articleCell = table.cellForRow(at: indexPath) as? ArticleCell else { return }
+        guard let urlString = articleCell.articleUrl else { return }
+        guard let url = URL(string: urlString) else { return }
+        
+        interactor.openWebNewsView(Models.OpenWebView.Request(url: url))
+    }
 }

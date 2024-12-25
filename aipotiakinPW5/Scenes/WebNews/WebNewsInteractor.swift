@@ -8,12 +8,21 @@
 import Foundation
 import UIKit
 
-final class WebNewsInteractor: WebNewsBusinessLogic {
+final class WebNewsInteractor: WebNewsBusinessLogic, WebNewsDataStore {
     // MARK: - Constants
     private let presenter: WebNewsPresentationLogic
     
+    // MARK: - Variables
+    internal var url: URL
+    
     // MARK: - Lifecycle
-    init(presenter: WebNewsPresentationLogic) {
+    init(presenter: WebNewsPresentationLogic, url: URL) {
         self.presenter = presenter
+        self.url = url
+    }
+    
+    // MARK: - Public Methods
+    func fetchWebContent() -> URL {
+        return url
     }
 }

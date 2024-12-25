@@ -8,6 +8,10 @@
 import Foundation
 import UIKit
 
+protocol WebNewsDataStore {
+    var url: URL { get set }
+}
+
 protocol WebNewsBusinessLogic {
     
 }

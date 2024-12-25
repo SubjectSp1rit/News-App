@@ -18,6 +18,7 @@ protocol NewsBusinessLogic {
     func loadImage(_ request: Models.FetchImage.Request)
     func presentShareSheet(_ request: Models.ShareSheet.Request)
     func configureMarkedArticle(_ request: Models.MarkArticle.Request)
+    func openWebNewsView(_ request: Models.OpenWebView.Request)
 }
 
 protocol NewsPresentationLogic {
@@ -26,6 +27,5 @@ protocol NewsPresentationLogic {
     func presentImageToCell(_ response: Models.FetchImage.Response)
     func presentShareSheet(_ response: Models.ShareSheet.Response)
     func presentMarkedArticle(_ response: Models.MarkArticle.Response)
-    
-    func routeTo()
+    func routeToWebNewsView(_ response: Models.OpenWebView.Response)
 }
