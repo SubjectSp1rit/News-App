@@ -94,6 +94,7 @@ final class ArticleCell: UITableViewCell {
     static let reuseId: String = "ArticleCell"
     
     // MARK: - UI Components
+    private let shimmer: ShimmerView = ShimmerView()
     private let wrapImage: UIImageView = UIImageView()
     private let titleLabel: UILabel = UILabel()
     private let descriptionLabel: UILabel = UILabel()
@@ -113,6 +114,7 @@ final class ArticleCell: UITableViewCell {
     var onBookmarkButtonTapped: ((String?) -> Void)?
     
     private(set) var articleUrl: String?
+    private(set) var imgUrl: String?
     
     // MARK: - Lifecycle
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -129,20 +131,29 @@ final class ArticleCell: UITableViewCell {
     func configure(with article: Models.ArticleModel) {
         titleLabel.text = article.title
         descriptionLabel.text = article.announce
-        articleUrl = article.sourceLink
         timeToReadLabel.text = article.timeOfReading
         dateLabel.text = article.date?.convertDateFormat()
+        articleUrl = article.sourceLink
+        imgUrl = article.img?.url?.absoluteString
     }
     
     func configureImage(with image: UIImage?) {
         guard let image = image else { return }
         wrapImage.image = image
         backgroundImage.image = image
+        
+        shimmer.stopAnimating()
+        shimmer.removeFromSuperview()
     }
     
-    func resetImages() {
+    func setShimmerImage() {
         wrapImage.image = nil
         backgroundImage.image = nil
+        
+        wrapImage.addSubview(shimmer)
+        wrapImage.bringSubviewToFront(textWrap)
+        shimmer.startAnimating()
+        shimmer.pin(to: wrapImage)
     }
     
     /// Перекрашивает "bookmark"
@@ -277,7 +288,7 @@ final class ArticleCell: UITableViewCell {
         backgroundImage.pinHeight(to: contentView.widthAnchor)
         
         // Размытие картинки на фоне
-        let blurEffect = UIBlurEffect(style: .light)
+        let blurEffect = UIBlurEffect(style: .dark)
         let blurView = UIVisualEffectView(effect: blurEffect)
         
         backgroundImage.addSubview(blurView)

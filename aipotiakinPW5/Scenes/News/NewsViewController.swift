@@ -87,6 +87,9 @@ final class NewsViewController: UIViewController {
     
     func displayImageInCell(_ viewModel: Models.FetchImage.ViewModel) {
         guard let articleCell = table.cellForRow(at: viewModel.indexPath) as? ArticleCell else { return }
+        let imgUrlFromCell = articleCell.imgUrl
+        let imgUrlFromPresenter = viewModel.url.absoluteString
+        guard imgUrlFromCell == imgUrlFromPresenter else { return } // Проверка что ячейка имеет тот же url картинки
         articleCell.configureImage(with: viewModel.fetchedImage)
     }
     
@@ -180,7 +183,7 @@ final class NewsViewController: UIViewController {
     }
     
     // MARK: - Actions
-    @objc func loadFreshNewsButtonPressed() {
+    @objc private func loadFreshNewsButtonPressed() {
         loadFreshNews()
         
         guard let button = navigationItem.rightBarButtonItem?.customView as? UIButton else { return }
@@ -193,11 +196,11 @@ final class NewsViewController: UIViewController {
         })
     }
     
-    @objc func refreshControllerPulled() {
+    @objc private func refreshControllerPulled() {
         loadFreshNews()
     }
     
-    @objc func changeLanguage() {
+    @objc private func changeLanguage() {
         let alertController = UIAlertController(title: "Select Language", message: nil, preferredStyle: .actionSheet)
 
         alertController.addAction(UIAlertAction(title: "English", style: .default, handler: { _ in
@@ -285,7 +288,7 @@ extension NewsViewController: UITableViewDataSource {
         
         let currentArticle = interactor.articles[indexPath.section]
         articleCell.configure(with: currentArticle)
-        articleCell.resetImages()
+        articleCell.setShimmerImage()
         
         if (interactor.markedArticles.contains(where: { $0.sourceLink == currentArticle.sourceLink })) {
             articleCell.configureMark(for: true)

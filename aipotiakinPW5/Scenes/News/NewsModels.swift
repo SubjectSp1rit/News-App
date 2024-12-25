@@ -62,10 +62,12 @@ enum Models {
             var indexPath: IndexPath
         }
         struct Response {
+            var url: URL
             var fetchedImage: UIImage
             var indexPath: IndexPath
         }
         struct ViewModel {
+            var url: URL
             var fetchedImage: UIImage
             var indexPath: IndexPath
         }

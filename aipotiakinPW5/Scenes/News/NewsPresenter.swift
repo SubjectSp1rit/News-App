@@ -26,7 +26,7 @@ final class NewsPresenter: NewsPresentationLogic {
     }
     
     func presentImageToCell(_ response: Models.FetchImage.Response) {
-        view?.displayImageInCell(Models.FetchImage.ViewModel(fetchedImage: response.fetchedImage, indexPath: response.indexPath))
+        view?.displayImageInCell(Models.FetchImage.ViewModel(url: response.url, fetchedImage: response.fetchedImage, indexPath: response.indexPath))
     }
     
     func presentShareSheet(_ response: Models.ShareSheet.Response) {

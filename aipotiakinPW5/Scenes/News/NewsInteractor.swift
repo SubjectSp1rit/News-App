@@ -65,7 +65,7 @@ final class NewsInteractor: NewsBusinessLogic, NewsDataStore {
             self.worker.fetchImage(for: request.url, completion: { fetchedImage in
                 DispatchQueue.main.async {
                     guard let fetchedImage = fetchedImage else { return } // Проверяем что картинка пришла
-                    self.presenter.presentImageToCell(Models.FetchImage.Response(fetchedImage: fetchedImage, indexPath: request.indexPath)) // Отправляем ответ презентеру
+                    self.presenter.presentImageToCell(Models.FetchImage.Response(url: request.url, fetchedImage: fetchedImage, indexPath: request.indexPath)) // Отправляем ответ презентеру
                 }
             })
         }
