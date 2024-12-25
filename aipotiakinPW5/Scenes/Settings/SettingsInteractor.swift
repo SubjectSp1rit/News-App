@@ -16,4 +16,9 @@ final class SettingsInteractor: SettingsBusinessLogic {
     init(presenter: SettingsPresentationLogic) {
         self.presenter = presenter
     }
+    
+    // MARK: - Public Methods
+    func openChangeLanguage(_ request: SettingsModels.ChangeLanguage.Request) {
+        presenter.presentChangeLanguage(SettingsModels.ChangeLanguage.Response())
+    }
 }

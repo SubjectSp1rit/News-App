@@ -97,23 +97,6 @@ extension SettingsViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let alertController = UIAlertController(title: "selectLanguage".localized, message: nil, preferredStyle: .actionSheet)
-
-        // Русский язык
-        alertController.addAction(UIAlertAction(title: "Русский", style: .default, handler: { _ in
-            LanguageManager.shared.setLanguage("ru")
-            print(LanguageManager.shared.currentLanguage)
-        }))
-
-        // Английский язык
-        alertController.addAction(UIAlertAction(title: "English", style: .default, handler: { _ in
-            LanguageManager.shared.setLanguage("en")
-            print(LanguageManager.shared.currentLanguage)
-        }))
-
-        // Отмена
-        alertController.addAction(UIAlertAction(title: "cancel".localized, style: .cancel))
-
-        present(alertController, animated: true)
+        interactor.openChangeLanguage(SettingsModels.ChangeLanguage.Request())
     }
 }

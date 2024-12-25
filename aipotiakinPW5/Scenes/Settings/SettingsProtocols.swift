@@ -9,9 +9,9 @@ import Foundation
 import UIKit
 
 protocol SettingsBusinessLogic {
-    
+    func openChangeLanguage(_ request: SettingsModels.ChangeLanguage.Request)
 }
 
 protocol SettingsPresentationLogic {
-    
+    func presentChangeLanguage(_ response: SettingsModels.ChangeLanguage.Response)
 }

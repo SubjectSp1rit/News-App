@@ -9,5 +9,8 @@ import Foundation
 import UIKit
 
 enum SettingsModels {
-    
+    enum ChangeLanguage {
+        struct Request { }
+        struct Response { }
+    }
 }

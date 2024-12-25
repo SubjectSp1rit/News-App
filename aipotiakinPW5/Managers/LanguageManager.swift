@@ -17,8 +17,16 @@ final class LanguageManager {
     }
 
     /// Установка нового языка
-    func setLanguage(_ languageCode: String) {
+    func setLanguage(_ languageCode: String, completion: @escaping (Bool) -> Void) {
+        let current = currentLanguage
+        if current == languageCode {
+            completion(false)
+            return
+        }
+
         userDefaults.set([languageCode], forKey: appleLanguagesKey)
         userDefaults.synchronize()
+
+        completion(true) // Язык изменён
     }
 }
