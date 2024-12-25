@@ -198,22 +198,6 @@ final class NewsViewController: UIViewController {
     @objc private func refreshControllerPulled() {
         loadFreshNews()
     }
-    
-    @objc private func changeLanguage() {
-        let alertController = UIAlertController(title: "Select Language", message: nil, preferredStyle: .actionSheet)
-
-        alertController.addAction(UIAlertAction(title: "English", style: .default, handler: { _ in
-            LanguageManager.shared.setLanguage("en")
-        }))
-
-        alertController.addAction(UIAlertAction(title: "Русский", style: .default, handler: { _ in
-            LanguageManager.shared.setLanguage("ru")
-        }))
-
-        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-
-        present(alertController, animated: true, completion: nil)
-    }
 }
 
 // MARK: - UITableViewDelegate

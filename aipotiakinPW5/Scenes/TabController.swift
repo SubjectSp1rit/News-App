@@ -27,12 +27,8 @@ final class TabController: UITabBarController {
         static let homeImageName: String = "newspaper"
         
         // saved view
-        static let starredTitle: String = "Saved"
+        static let starredTitle: String = "Saved News"
         static let starredImageName: String = "bookmark"
-        
-        // settings view
-        static let settingsTitle: String = "Settings"
-        static let settingsImageName: String = "gear"
     }
     
     override func viewDidLoad() {
@@ -45,10 +41,9 @@ final class TabController: UITabBarController {
     // MARK: - Tab Setup
     private func setupTabs() {
         let home = self.createNav(with: Constants.homeTitle, and: UIImage(systemName: Constants.homeImageName), vc: NewsAssembly.build())
-        let saved = self.createNav(with: Constants.starredTitle, and: UIImage(systemName: Constants.starredImageName), vc: NewsAssembly.build())
-        let settings = self.createNav(with: Constants.settingsTitle, and: UIImage(systemName: Constants.settingsImageName), vc: NewsAssembly.build())
+        let saved = self.createNav(with: Constants.starredTitle, and: UIImage(systemName: Constants.starredImageName), vc: SavedNewsAssembly.build())
         
-        self.setViewControllers([home, saved, settings], animated: true)
+        self.setViewControllers([home, saved], animated: true)
     }
     
     private func configureUI() {

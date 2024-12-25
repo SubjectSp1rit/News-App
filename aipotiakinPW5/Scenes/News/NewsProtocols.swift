@@ -7,6 +7,7 @@
 
 import UIKit
 
+
 protocol NewsDataStore {
     var articles: [Models.ArticleModel] { get set }
     var markedArticles: [Models.ArticleModel] { get set }
