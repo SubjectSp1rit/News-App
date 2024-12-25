@@ -23,11 +23,11 @@ final class TabController: UITabBarController {
         static let navBarTitleColor: UIColor = .white
         
         // home view
-        static let homeTitle: String = "News"
+        static let homeTitle: String = "newsTabBarTitle".localized
         static let homeImageName: String = "newspaper"
         
         // saved view
-        static let starredTitle: String = "Saved News"
+        static let starredTitle: String = "savedNewsTabBarTitle".localized
         static let starredImageName: String = "bookmark"
     }
     

@@ -128,7 +128,7 @@ final class ArticleCell: UITableViewCell {
     }
     
     // MARK: - Public Methods
-    func configure(with article: Models.ArticleModel) {
+    func configure(with article: NewsModels.ArticleModel) {
         titleLabel.text = article.title
         descriptionLabel.text = article.announce
         timeToReadLabel.text = article.timeOfReading

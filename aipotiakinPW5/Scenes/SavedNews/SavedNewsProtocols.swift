@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 protocol SavedNewsDataStore {
-    var markedArticles: [Models.ArticleModel] { get set }
+    var markedArticles: [NewsModels.ArticleModel] { get set }
 }
 
 protocol SavedNewsBusinessLogic {

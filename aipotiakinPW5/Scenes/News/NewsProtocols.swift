@@ -9,26 +9,26 @@ import UIKit
 
 
 protocol NewsDataStore {
-    var articles: [Models.ArticleModel] { get set }
-    var markedArticles: [Models.ArticleModel] { get set }
+    var articles: [NewsModels.ArticleModel] { get set }
+    var markedArticles: [NewsModels.ArticleModel] { get set }
 }
 
 protocol NewsBusinessLogic {
-    func loadFreshNews(_ request: Models.FetchArticles.Request)
-    func loadMoreNews(_ request: Models.FetchMoreArticles.Request)
-    func loadImage(_ request: Models.FetchImage.Request)
-    func presentShareSheet(_ request: Models.ShareSheet.Request)
-    func configureMarkedArticle(_ request: Models.MarkArticle.Request)
-    func openWebNewsView(_ request: Models.OpenWebView.Request)
-    func updateArticles(_ request: Models.UpdateArticles.Request)
+    func loadFreshNews(_ request: NewsModels.FetchArticles.Request)
+    func loadMoreNews(_ request: NewsModels.FetchMoreArticles.Request)
+    func loadImage(_ request: NewsModels.FetchImage.Request)
+    func presentShareSheet(_ request: NewsModels.ShareSheet.Request)
+    func configureMarkedArticle(_ request: NewsModels.MarkArticle.Request)
+    func openWebNewsView(_ request: NewsModels.OpenWebView.Request)
+    func updateArticles(_ request: NewsModels.UpdateArticles.Request)
 }
 
 protocol NewsPresentationLogic {
-    func presentNews(_ response: Models.FetchArticles.Response)
-    func presentMoreNews(_ response: Models.FetchMoreArticles.Response)
-    func presentImageToCell(_ response: Models.FetchImage.Response)
-    func presentShareSheet(_ response: Models.ShareSheet.Response)
-    func presentMarkedArticle(_ response: Models.MarkArticle.Response)
-    func routeToWebNewsView(_ response: Models.OpenWebView.Response)
-    func presentUpdatedArticles(_ response: Models.UpdateArticles.Response)
+    func presentNews(_ response: NewsModels.FetchArticles.Response)
+    func presentMoreNews(_ response: NewsModels.FetchMoreArticles.Response)
+    func presentImageToCell(_ response: NewsModels.FetchImage.Response)
+    func presentShareSheet(_ response: NewsModels.ShareSheet.Response)
+    func presentMarkedArticle(_ response: NewsModels.MarkArticle.Response)
+    func routeToWebNewsView(_ response: NewsModels.OpenWebView.Response)
+    func presentUpdatedArticles(_ response: NewsModels.UpdateArticles.Response)
 }

@@ -19,7 +19,7 @@ final class SavedNewsInteractor: SavedNewsBusinessLogic, SavedNewsDataStore {
     }
     
     // MARK: - Variables
-    internal var markedArticles: [Models.ArticleModel] = [] {
+    internal var markedArticles: [NewsModels.ArticleModel] = [] {
         didSet {
             UserDefaultsManager.shared.save(markedArticles, forKey: Constants.savedArticlesKey)
         }

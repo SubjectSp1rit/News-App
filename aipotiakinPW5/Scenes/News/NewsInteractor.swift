@@ -18,12 +18,12 @@ final class NewsInteractor: NewsBusinessLogic, NewsDataStore {
     }
     
     // MARK: - Variables
-    internal var articles: [Models.ArticleModel] = [] {
+    internal var articles: [NewsModels.ArticleModel] = [] {
         didSet {
-            presenter.presentNews(Models.FetchArticles.Response(pageIndex: currentNewsPage))
+            presenter.presentNews(NewsModels.FetchArticles.Response(pageIndex: currentNewsPage))
         }
     }
-    internal var markedArticles: [Models.ArticleModel] = UserDefaultsManager.shared.load(forKey: Constants.savedArticlesKey) {
+    internal var markedArticles: [NewsModels.ArticleModel] = UserDefaultsManager.shared.load(forKey: Constants.savedArticlesKey) {
         didSet {
             UserDefaultsManager.shared.save(markedArticles, forKey: Constants.savedArticlesKey)
         }
@@ -38,7 +38,7 @@ final class NewsInteractor: NewsBusinessLogic, NewsDataStore {
     }
     
     // MARK: - Public Methods
-    func loadFreshNews(_ request: Models.FetchArticles.Request) {
+    func loadFreshNews(_ request: NewsModels.FetchArticles.Request) {
         // Если новости уже загружаются - ничего не делаем
         guard !isLoading else { return }
         isLoading = true
@@ -54,7 +54,7 @@ final class NewsInteractor: NewsBusinessLogic, NewsDataStore {
         }
     }
     
-    func loadMoreNews(_ request: Models.FetchMoreArticles.Request) {
+    func loadMoreNews(_ request: NewsModels.FetchMoreArticles.Request) {
         // Если новости уже загружаются - ничего не делаем
         guard !isLoading else { return }
         isLoading = true
@@ -70,40 +70,40 @@ final class NewsInteractor: NewsBusinessLogic, NewsDataStore {
         }
     }
     
-    func loadImage(_ request: Models.FetchImage.Request) {
+    func loadImage(_ request: NewsModels.FetchImage.Request) {
         DispatchQueue.global().async {
             self.worker.fetchImage(for: request.url, completion: { fetchedImage in
                 DispatchQueue.main.async {
                     guard let fetchedImage = fetchedImage else { return } // Проверяем что картинка пришла
-                    self.presenter.presentImageToCell(Models.FetchImage.Response(url: request.url, fetchedImage: fetchedImage, indexPath: request.indexPath)) // Отправляем ответ презентеру
+                    self.presenter.presentImageToCell(NewsModels.FetchImage.Response(url: request.url, fetchedImage: fetchedImage, indexPath: request.indexPath)) // Отправляем ответ презентеру
                 }
             })
         }
     }
     
-    func presentShareSheet(_ request: Models.ShareSheet.Request) {
-        presenter.presentShareSheet(Models.ShareSheet.Response(url: request.url))
+    func presentShareSheet(_ request: NewsModels.ShareSheet.Request) {
+        presenter.presentShareSheet(NewsModels.ShareSheet.Response(url: request.url))
     }
     
-    func openWebNewsView(_ request: Models.OpenWebView.Request) {
-        presenter.routeToWebNewsView(Models.OpenWebView.Response(url: request.url))
+    func openWebNewsView(_ request: NewsModels.OpenWebView.Request) {
+        presenter.routeToWebNewsView(NewsModels.OpenWebView.Response(url: request.url))
     }
     
-    func updateArticles(_ request: Models.UpdateArticles.Request) {
+    func updateArticles(_ request: NewsModels.UpdateArticles.Request) {
         markedArticles = UserDefaultsManager.shared.load(forKey: Constants.savedArticlesKey)
-        presenter.presentUpdatedArticles(Models.UpdateArticles.Response())
+        presenter.presentUpdatedArticles(NewsModels.UpdateArticles.Response())
     }
     
-    func configureMarkedArticle(_ request: Models.MarkArticle.Request) {
+    func configureMarkedArticle(_ request: NewsModels.MarkArticle.Request) {
         guard let markedArticle = articles.first(where: { $0.sourceLink == request.url }) else { return }
         
         // Если новость уже есть в списке - значит ее надо удалить
         if markedArticles.contains(where: { $0.sourceLink == request.url }) {
             markedArticles.removeAll(where: { $0.sourceLink == request.url })
-            presenter.presentMarkedArticle(Models.MarkArticle.Response(indexPath: request.indexPath, removed: true))
+            presenter.presentMarkedArticle(NewsModels.MarkArticle.Response(indexPath: request.indexPath, removed: true))
         } else { // Иначе добавить в массив
             markedArticles.append(markedArticle)
-            presenter.presentMarkedArticle(Models.MarkArticle.Response(indexPath: request.indexPath, removed: false))
+            presenter.presentMarkedArticle(NewsModels.MarkArticle.Response(indexPath: request.indexPath, removed: false))
         }
     }
 }

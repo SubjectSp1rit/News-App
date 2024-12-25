@@ -16,7 +16,7 @@ final class SavedNewsViewController: UIViewController {
         static let bgImageName: String = "background"
         
         // navBar
-        static let navBarTitle: String = "Saved News"
+        static let navBarTitle: String = "savedNewsNavBarTitle".localized
         
         // table
         static let tableNumberOfRowsInSection: Int = 1
@@ -28,12 +28,12 @@ final class SavedNewsViewController: UIViewController {
         static let minimumTableNumberOfSections: Int = 8
         
         // leadingSwipeAction
-        static let tableLeadingSwipeActionShareTitle: String = "Share"
+        static let tableLeadingSwipeActionShareTitle: String = "swipeActionShareTitle".localized
         static let tableLeadingSwipeActionShareImageName: String = "square.and.arrow.up"
         static let tableLeadingSwipeActionShareBgColor: UIColor = .lightGray
         
         // trailingSwipeAction
-        static let tableTrailingSwipeActionMarkTitle: String = "Mark"
+        static let tableTrailingSwipeActionMarkTitle: String = "swipeActionMarkTitle".localized
         static let tableTrailingSwipeActionMarkImageName: String = "bookmark"
         static let tableTrailingSwipeActionMarkBgColor: UIColor = .systemYellow
     }

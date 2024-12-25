@@ -15,7 +15,7 @@ class LoadMoreArticlesCell: UITableViewCell {
         static let cellBgColor: UIColor = .clear
         
         // loadMoreArticlesButton
-        static let loadMoreArticlesButtonTitle: String = "More"
+        static let loadMoreArticlesButtonTitle: String = "loadMoreArticlesButtonTitle".localized
     }
     
     static let reuseId: String = "LoadMoreArticlesCell"

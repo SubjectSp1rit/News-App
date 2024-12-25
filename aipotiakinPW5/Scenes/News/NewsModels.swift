@@ -7,7 +7,7 @@
 
 import UIKit
 
-enum Models {
+enum NewsModels {
     struct ArticleModel: Decodable, Encodable {
         var newsId: Int?
         var title: String?

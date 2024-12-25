@@ -14,7 +14,7 @@ final class NewsViewController: UIViewController {
         static let bgImageName: String = "background"
         
         // navBar
-        static let navBarTitle: String = "News"
+        static let navBarTitle: String = "newsNavBarTitle".localized
         
         // loadFreshNewsButton
         static let loadFreshNewsButtonImageName: String = "arrow.trianglehead.2.clockwise"
@@ -30,14 +30,17 @@ final class NewsViewController: UIViewController {
         static let minimumTableNumberOfSections: Int = 8
         
         // leadingSwipeAction
-        static let tableLeadingSwipeActionShareTitle: String = "Share"
+        static let tableLeadingSwipeActionShareTitle: String = "swipeActionShareTitle".localized
         static let tableLeadingSwipeActionShareImageName: String = "square.and.arrow.up"
         static let tableLeadingSwipeActionShareBgColor: UIColor = .lightGray
         
         // trailingSwipeAction
-        static let tableTrailingSwipeActionMarkTitle: String = "Mark"
+        static let tableTrailingSwipeActionMarkTitle: String = "swipeActionMarkTitle".localized
         static let tableTrailingSwipeActionMarkImageName: String = "bookmark"
         static let tableTrailingSwipeActionMarkBgColor: UIColor = .systemYellow
+        
+        // refreshControl
+        static let refreshControlTitle: String = "refreshControlTitle".localized
     }
 
     
@@ -69,11 +72,11 @@ final class NewsViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        interactor.updateArticles(Models.UpdateArticles.Request())
+        interactor.updateArticles(NewsModels.UpdateArticles.Request())
     }
     
     // MARK: - Public Methods
-    func displayFetchedArticles(_ viewModel: Models.FetchArticles.ViewModel) {
+    func displayFetchedArticles(_ viewModel: NewsModels.FetchArticles.ViewModel) {
         refreshControl.endRefreshing() // Новости загружены - завершаем прокрутку
         table.reloadData()
         
@@ -85,15 +88,15 @@ final class NewsViewController: UIViewController {
         }
     }
     
-    func displayUpdatedArticles(_ viewModel: Models.UpdateArticles.ViewModel) {
+    func displayUpdatedArticles(_ viewModel: NewsModels.UpdateArticles.ViewModel) {
         table.reloadData()
     }
     
-    func displayMoreFetchedArticles(_ viewModel: Models.FetchMoreArticles.ViewModel) {
+    func displayMoreFetchedArticles(_ viewModel: NewsModels.FetchMoreArticles.ViewModel) {
         table.reloadData()
     }
     
-    func displayImageInCell(_ viewModel: Models.FetchImage.ViewModel) {
+    func displayImageInCell(_ viewModel: NewsModels.FetchImage.ViewModel) {
         guard let articleCell = table.cellForRow(at: viewModel.indexPath) as? ArticleCell else { return }
         let imgUrlFromCell = articleCell.imgUrl
         let imgUrlFromPresenter = viewModel.url.absoluteString
@@ -101,7 +104,7 @@ final class NewsViewController: UIViewController {
         articleCell.configureImage(with: viewModel.fetchedImage)
     }
     
-    func displayMarkedArticleInCell(_ viewModel: Models.MarkArticle.ViewModel) {
+    func displayMarkedArticleInCell(_ viewModel: NewsModels.MarkArticle.ViewModel) {
         guard let articleCell = table.cellForRow(at: viewModel.indexPath) as? ArticleCell else { return }
         if viewModel.removed { // Если удалили - красим в стандартный цвет
             articleCell.configureMark(for: false)
@@ -162,7 +165,7 @@ final class NewsViewController: UIViewController {
     
     private func configureRefreshControl() {
         refreshControl.tintColor = .systemGreen
-        refreshControl.attributedTitle = NSAttributedString(string: "Загрузка свежих новостей...", attributes: [.foregroundColor: UIColor.systemGreen])
+        refreshControl.attributedTitle = NSAttributedString(string: Constants.refreshControlTitle, attributes: [.foregroundColor: UIColor.systemGreen])
         refreshControl.addTarget(self, action: #selector(refreshControllerPulled), for: .valueChanged)
     }
     
@@ -178,16 +181,16 @@ final class NewsViewController: UIViewController {
     }
     
     private func loadFreshNews() {
-        interactor.loadFreshNews(Models.FetchArticles.Request())
+        interactor.loadFreshNews(NewsModels.FetchArticles.Request())
         
         // Запускаем повторную попытку загрузки новостей через секунду на повторе
         retryTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { _ in
-            self.interactor.loadFreshNews(Models.FetchArticles.Request())
+            self.interactor.loadFreshNews(NewsModels.FetchArticles.Request())
         })
     }
     
     private func loadMoreNews() {
-        interactor.loadMoreNews(Models.FetchMoreArticles.Request())
+        interactor.loadMoreNews(NewsModels.FetchMoreArticles.Request())
     }
     
     // MARK: - Actions
@@ -214,13 +217,13 @@ extension NewsViewController: UITableViewDelegate {
     private func handleBookmark(for indexPath: IndexPath) {
         guard let articleCell = table.cellForRow(at: indexPath) as? ArticleCell else { return }
         guard let url = articleCell.articleUrl else { return }
-        interactor.configureMarkedArticle(Models.MarkArticle.Request(url: url, indexPath: indexPath))
+        interactor.configureMarkedArticle(NewsModels.MarkArticle.Request(url: url, indexPath: indexPath))
     }
     
     private func handleShare(for indexPath: IndexPath) {
         guard let articleCell = table.cellForRow(at: indexPath) as? ArticleCell else { return }
         guard let url = articleCell.articleUrl else { return }
-        interactor.presentShareSheet(Models.ShareSheet.Request(url: url))
+        interactor.presentShareSheet(NewsModels.ShareSheet.Request(url: url))
     }
 }
 
@@ -290,17 +293,17 @@ extension NewsViewController: UITableViewDataSource {
         
         articleCell.onShareButtonTapped = { [weak self] url in
             guard let url = url else { return }
-            self?.interactor.presentShareSheet(Models.ShareSheet.Request(url: url))
+            self?.interactor.presentShareSheet(NewsModels.ShareSheet.Request(url: url))
         }
         
         articleCell.onBookmarkButtonTapped = { [weak self] url in
             guard let url = url else { return }
-            self?.interactor.configureMarkedArticle(Models.MarkArticle.Request(url: url, indexPath: indexPath))
+            self?.interactor.configureMarkedArticle(NewsModels.MarkArticle.Request(url: url, indexPath: indexPath))
         }
         
         // Скачиваем картинку
         if let url = currentArticle.img?.url {
-            interactor.loadImage(Models.FetchImage.Request(url: url, indexPath: indexPath))
+            interactor.loadImage(NewsModels.FetchImage.Request(url: url, indexPath: indexPath))
         }
 
         return articleCell
@@ -359,6 +362,6 @@ extension NewsViewController: UITableViewDataSource {
         guard let urlString = articleCell.articleUrl else { return }
         guard let url = URL(string: urlString) else { return }
         
-        interactor.openWebNewsView(Models.OpenWebView.Request(url: url))
+        interactor.openWebNewsView(NewsModels.OpenWebView.Request(url: url))
     }
 }

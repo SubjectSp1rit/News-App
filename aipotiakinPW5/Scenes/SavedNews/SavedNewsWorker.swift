@@ -13,7 +13,7 @@ final class SavedNewsWorker {
     
     // MARK: - Variables
     private var decoder: JSONDecoder = JSONDecoder()
-    private var newsPage: Models.NewsPage = Models.NewsPage()
+    private var newsPage: NewsModels.NewsPage = NewsModels.NewsPage()
     
     // MARK: - Public Methods
     func fetchImage(for url: URL, completion: @escaping (UIImage?) -> Void) {

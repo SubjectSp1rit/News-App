@@ -13,7 +13,7 @@ final class WebNewsViewController: UIViewController {
     // MARK: - Constants
     private enum Constants {
         // closeButton
-        static let closeButtonTitle: String = "Close"
+        static let closeButtonTitle: String = "closeButtonTitle".localized
         static let closeButtonBgColor: UIColor = .clear
         static let closeButtonTintColor: UIColor = .systemBlue
         static let closeButtonLeadingIndent: CGFloat = 10

@@ -13,10 +13,10 @@ final class NewsWorker {
     
     // MARK: - Variables
     private var decoder: JSONDecoder = JSONDecoder()
-    private var newsPage: Models.NewsPage = Models.NewsPage()
+    private var newsPage: NewsModels.NewsPage = NewsModels.NewsPage()
     
     // MARK: - Public Methods
-    func fetchNews(page: Int, completion: @escaping ([Models.ArticleModel]) -> Void) {
+    func fetchNews(page: Int, completion: @escaping ([NewsModels.ArticleModel]) -> Void) {
         guard let url = getUrl(4, page) else {
             completion([]) // Возвращаем пустой массив, если URL невалиден
             return
@@ -32,7 +32,7 @@ final class NewsWorker {
             if
                let self = self,
                let data = data,
-               var newsPage = try? decoder.decode(Models.NewsPage.self, from: data)
+               var newsPage = try? decoder.decode(NewsModels.NewsPage.self, from: data)
             {
                 newsPage.passTheRequestId()
                 newsPage = newsPage
