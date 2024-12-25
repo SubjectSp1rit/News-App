@@ -279,13 +279,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mark"
+            "value" : "Mark/Unmark"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Добавить в избранное"
+            "value" : "Добавить/удалить из избранного"
           }
         }
       }
