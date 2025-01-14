@@ -92,7 +92,6 @@ extension SettingsViewController: UITableViewDataSource {
         let cell = table.dequeueReusableCell(withIdentifier: ChangeLanguageCell.reuseId, for: indexPath)
         cell.selectionStyle = .none
         guard let settingsCell = cell as? ChangeLanguageCell else { return cell }
-        
         return settingsCell
     }
     
