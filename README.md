@@ -1,4 +1,5 @@
 <h1 align="center">Новостное приложение для iOS (Swift + UIKit)</h1>
+<a align="center" href="https://habr.com/ru/companies/wildberries/articles/798275/">Архитектура SVIP</a>
 
 <p align="center">
   Пока новости не загрузились - вместо них располагаются мерцающие ячейки  
